@@ -1,0 +1,3 @@
+useDynLib(spNNGP)
+export(rNNGP)
+import(Formula, coda)
