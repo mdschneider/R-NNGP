@@ -165,3 +165,38 @@ double spCor(double &D, double &phi, double &nu, int &covModel, double *bk){
     error("c++ error: cov.model is not correctly specified");
   }
 }
+
+//which index of b equals a, where b is of length n
+int which(int a, int *b, int n){
+  int i;
+  for(i = 0; i < n; i++){
+    if(a == b[i]){
+      return(i);
+    }
+  }
+
+  error("c++ error: which failed");
+  return -9999;
+}
+
+//Description: computes the quadratic term.
+double Q(double *B, double *F, double *u, double *v, int n, int *nnIndx, int *nnIndxLU){
+  
+  double a, b, q = 0;
+  int i, j;
+  
+#ifdef _OPENMP
+#pragma omp parallel for private(a, b, j) reduction(+:q)
+#endif  
+  for(i = 0; i < n; i++){
+    a = 0;
+    b = 0;
+    for(j = 0; j < nnIndxLU[n+i]; j++){
+      a += B[nnIndxLU[i]+j]*u[nnIndx[nnIndxLU[i]+j]];
+      b += B[nnIndxLU[i]+j]*v[nnIndx[nnIndxLU[i]+j]];
+    }
+    q += (u[i] - a)*(v[i] - b)/F[i];
+  }
+  
+  return(q);
+}

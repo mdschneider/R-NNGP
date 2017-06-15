@@ -11,28 +11,6 @@
 #include <omp.h>
 #endif
 
-//Description: computes the quadratic term.
-double Q(double *B, double *F, double *u, double *v, int n, int *nnIndx, int *nnIndxLU){
-  
-  double a, b, q = 0;
-  int i, j;
-  
-#ifdef _OPENMP
-#pragma omp parallel for private(a, b, j) reduction(+:q)
-#endif  
-  for(i = 0; i < n; i++){
-    a = 0;
-    b = 0;
-    for(j = 0; j < nnIndxLU[n+i]; j++){
-      a += B[nnIndxLU[i]+j]*u[nnIndx[nnIndxLU[i]+j]];
-      b += B[nnIndxLU[i]+j]*v[nnIndx[nnIndxLU[i]+j]];
-    }
-    q += (u[i] - a)*(v[i] - b)/F[i];
-  }
-  
-  return(q);
-}
-
 //Description: update B and F.
 double updateBF(double *B, double *F, double *c, double *C, double *D, double *d, int *nnIndxLU, int *CIndx, int n, double *theta, int tauSqIndx, int sigmaSqIndx, int phiIndx, int nuIndx, int covModel, double *bk, double nuUnifb){
     
@@ -43,6 +21,11 @@ double updateBF(double *B, double *F, double *c, double *C, double *D, double *d
   double zero = 0.0;
   char lower = 'L';
   double logDet = 0;
+  double nu = 0;
+
+  if(getCorName(covModel) == "matern"){
+    nu = theta[nuIndx];
+  }
 
   //bk must be 1+(int)floor(alpha) * nthread
   int nb = 1+static_cast<int>(floor(nuUnifb));
@@ -55,9 +38,9 @@ double updateBF(double *B, double *F, double *c, double *C, double *D, double *d
       threadID = omp_get_thread_num();
       if(i > 0){
 	for(k = 0; k < nnIndxLU[n+i]; k++){
-	  c[nnIndxLU[i]+k] = theta[sigmaSqIndx]*spCor(d[nnIndxLU[i]+k], theta[phiIndx], theta[nuIndx], covModel, &bk[threadID*nb]);
+	  c[nnIndxLU[i]+k] = theta[sigmaSqIndx]*spCor(d[nnIndxLU[i]+k], theta[phiIndx], nu, covModel, &bk[threadID*nb]);
 	  for(l = 0; l <= k; l++){
-	    C[CIndx[i]+l*nnIndxLU[n+i]+k] = theta[sigmaSqIndx]*spCor(D[CIndx[i]+l*nnIndxLU[n+i]+k], theta[phiIndx], theta[nuIndx], covModel, &bk[threadID*nb]); 
+	    C[CIndx[i]+l*nnIndxLU[n+i]+k] = theta[sigmaSqIndx]*spCor(D[CIndx[i]+l*nnIndxLU[n+i]+k], theta[phiIndx], nu, covModel, &bk[threadID*nb]); 
 	    if(l == k){
 	      C[CIndx[i]+l*nnIndxLU[n+i]+k] += theta[tauSqIndx];
 	    }
@@ -83,10 +66,10 @@ double updateBF(double *B, double *F, double *c, double *C, double *D, double *d
 extern "C" {
   
   SEXP rNNGP(SEXP y_r, SEXP X_r, SEXP p_r, SEXP n_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, 
-	      SEXP sigmaSqIG_r, SEXP tauSqIG_r, SEXP phiUnif_r, SEXP nuUnif_r, 
-	      SEXP betaStarting_r, SEXP sigmaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
-	      SEXP sigmaSqTuning_r, SEXP tauSqTuning_r, SEXP phiTuning_r, SEXP nuTuning_r, 
-	      SEXP nSamples_r, SEXP nThreads_r, SEXP verbose_r, SEXP nReport_r){
+	     SEXP sigmaSqIG_r, SEXP tauSqIG_r, SEXP phiUnif_r, SEXP nuUnif_r, 
+	     SEXP betaStarting_r, SEXP sigmaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
+	     SEXP sigmaSqTuning_r, SEXP tauSqTuning_r, SEXP phiTuning_r, SEXP nuTuning_r, 
+	     SEXP nSamples_r, SEXP nThreads_r, SEXP verbose_r, SEXP nReport_r){
     
     int h, i, j, k, l, s, info, nProtect=0;
     const int inc = 1;
@@ -139,7 +122,7 @@ extern "C" {
       Rprintf("----------------------------------------\n");
       Rprintf("\tModel description\n");
       Rprintf("----------------------------------------\n");
-      Rprintf("Model fit with %i observations.\n\n", n);
+      Rprintf("NNGP Response model fit with %i observations.\n\n", n);
       Rprintf("Number of covariates %i (including intercept if specified).\n\n", p);
       Rprintf("Using the %s spatial correlation model.\n\n", corName.c_str());
       Rprintf("Using %i nearest neighbors.\n\n", m);
@@ -293,11 +276,8 @@ extern "C" {
 	
 	F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info); if(info != 0){error("c++ error: dpotrf failed\n");}
 	F77_NAME(dpotri)(lower, &p, tmp_pp, &p, &info); if(info != 0){error("c++ error: dpotri failed\n");}
-	
 	F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc);
-	
 	F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info); if(info != 0){error("c++ error: dpotrf failed\n");}
-	
       }
       
       mvrnorm(beta, tmp_p2, tmp_pp, p);

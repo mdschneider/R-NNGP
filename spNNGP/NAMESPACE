@@ -1,6 +1,6 @@
-useDynLib(spNNGP)
+useDynLib(spNNGP, .registration=TRUE)
 
-export(rNNGP)
+export(spNNGP)
 
 import(Formula, coda)
 importFrom("stats", "coefficients", "lm", "contrasts", "is.empty.model", "model.matrix", "model.response", "terms")

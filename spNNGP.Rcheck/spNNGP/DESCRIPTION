@@ -12,5 +12,5 @@ Encoding: UTF-8
 URL: http://blue.for.msu.edu/software.html
 Repository: CRAN
 NeedsCompilation: yes
-Packaged: 2017-06-14 05:41:16 UTC; andy
-Built: R 3.5.0; x86_64-pc-linux-gnu; 2017-06-14 05:41:55 UTC; unix
+Packaged: 2017-06-15 02:03:23 UTC; andy
+Built: R 3.5.0; x86_64-pc-linux-gnu; 2017-06-15 02:03:51 UTC; unix

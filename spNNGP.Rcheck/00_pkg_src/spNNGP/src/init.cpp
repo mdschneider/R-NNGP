@@ -6,6 +6,7 @@
 
 static const R_CallMethodDef CallEntries[] = {
     {"rNNGP", (DL_FUNC) &rNNGP, 24},
+    {"sNNGP", (DL_FUNC) &rNNGP, 24},
     {NULL, NULL, 0}
 };
 

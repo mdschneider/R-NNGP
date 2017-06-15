@@ -17,16 +17,16 @@ library('spNNGP')
 
 base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 cleanEx()
-nameEx("rNNGP")
-### * rNNGP
+nameEx("spNNGP")
+### * spNNGP
 
 flush(stderr()); flush(stdout())
 
 base::assign(".ptime", proc.time(), pos = "CheckExEnv")
-### Name: rNNGP
+### Name: spNNGP
 ### Title: Function for fitting univariate Bayesian spatial regression
 ###   models
-### Aliases: rNNGP
+### Aliases: spNNGP
 ### Keywords: model
 
 ### ** Examples
@@ -72,7 +72,7 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ##D n.report <- 500
 ##D verbose <- TRUE
 ##D 
-##D m.1 <- rNNGP(y~X-1, coords=coords, starting=starting, n.neighbors=10,
+##D m.1 <- spNNGP(y~X-1, coords=coords, starting=starting, n.neighbors=10,
 ##D               tuning=tuning, priors=priors, cov.model=cov.model,
 ##D               n.samples=n.samples, n.omp.threads=2, verbose=verbose, n.report=n.report)
 ##D 
@@ -85,7 +85,7 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 
 
 base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-base::cat("rNNGP", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+base::cat("spNNGP", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 ### * <FOOTER>
 ###
 options(digits = 7L)

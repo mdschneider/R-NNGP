@@ -58,3 +58,7 @@ void mkUIndx(int n, int m, int* nnIndx, int* uIndx, int* uIndxLU);
 std::string getCorName(int i);
 
 double spCor(double &D, double &phi, double &nu, int &covModel, double *bk);
+
+int which(int a, int *b, int n);
+
+double Q(double *B, double *F, double *u, double *v, int n, int *nnIndx, int *nnIndxLU);
