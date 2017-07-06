@@ -1,5 +1,5 @@
 spNNGP <- function(formula, data = parent.frame(), coords, method = "response", n.neighbors = 15, 
-                   starting, tuning, priors, cov.model,
+                   starting, tuning, priors, cov.model = "exponential",
                    n.samples, n.omp.threads = 1, verbose=TRUE, n.report=100, ...){
     
     ####################################################
@@ -201,7 +201,9 @@ spNNGP <- function(formula, data = parent.frame(), coords, method = "response", 
 
     ptm <- proc.time()
 
-    out <- .Call(paste(substr(method,1,1),"NNGP",collapse="",sep=""), y, X, p, n, n.neighbors, coords, cov.model.indx,
+    nngp <- paste(substr(method,1,1),"NNGP",collapse="",sep="")
+    
+    out <- .Call(nngp, y, X, p, n, n.neighbors, coords, cov.model.indx,
                  sigma.sq.IG, tau.sq.IG, phi.Unif, nu.Unif, 
                  beta.starting, sigma.sq.starting, tau.sq.starting, phi.starting, nu.starting,
                  sigma.sq.tuning, tau.sq.tuning, phi.tuning, nu.tuning,

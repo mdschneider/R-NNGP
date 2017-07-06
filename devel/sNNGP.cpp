@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <R.h>
 #include <Rmath.h>
@@ -11,28 +10,6 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-
-//Description: computes the quadratic term.
-double Q(double *B, double *F, double *u, double *v, int n, int *nnIndx, int *nnIndxLU){
-  
-  double a, b, q = 0;
-  int i, j;
-  
-#ifdef _OPENMP
-#pragma omp parallel for private(a, b, j) reduction(+:q)
-#endif  
-  for(i = 0; i < n; i++){
-    a = 0;
-    b = 0;
-    for(j = 0; j < nnIndxLU[n+i]; j++){
-      a += B[nnIndxLU[i]+j]*u[nnIndx[nnIndxLU[i]+j]];
-      b += B[nnIndxLU[i]+j]*v[nnIndx[nnIndxLU[i]+j]];
-    }
-    q += (u[i] - a)*(v[i] - b)/F[i];
-  }
-  
-  return(q);
-}
 
 //Description: update B and F.
 void updateBF(double *B, double *F, double *c, double *C, double *D, double *d, int *nnIndxLU, int *CIndx, int n, double sigmaSq, double phi, double nu, int covModel, double *bk, double nuUnifb){
@@ -75,10 +52,10 @@ void updateBF(double *B, double *F, double *c, double *C, double *D, double *d, 
 extern "C" {
   
   SEXP sNNGP(SEXP y_r, SEXP X_r, SEXP p_r, SEXP n_r, SEXP m_r, SEXP coords_r, SEXP covModel_r, 
-	      SEXP sigmaSqIG_r, SEXP tauSqIG_r, SEXP phiUnif_r, SEXP nuUnif_r, 
-	      SEXP betaStarting_r, SEXP sigmaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
-	      SEXP sigmaSqTuning_r, SEXP tauSqTuning_r, SEXP phiTuning_r, SEXP nuTuning_r, 
-	      SEXP nSamples_r, SEXP nThreads_r, SEXP verbose_r, SEXP nReport_r){
+	     SEXP sigmaSqIG_r, SEXP tauSqIG_r, SEXP phiUnif_r, SEXP nuUnif_r, 
+	     SEXP betaStarting_r, SEXP sigmaSqStarting_r, SEXP tauSqStarting_r, SEXP phiStarting_r, SEXP nuStarting_r,
+	     SEXP sigmaSqTuning_r, SEXP tauSqTuning_r, SEXP phiTuning_r, SEXP nuTuning_r, 
+	     SEXP nSamples_r, SEXP nThreads_r, SEXP verbose_r, SEXP nReport_r){
     
     int h, i, j, k, l, s, info, nProtect=0;
     const int inc = 1;
