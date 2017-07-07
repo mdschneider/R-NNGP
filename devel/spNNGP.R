@@ -53,7 +53,7 @@ spNNGP <- function(formula, data = parent.frame(), coords, method = "response", 
     ####################################################
     ##NNGP method
     ####################################################
-    method.names <- c("response","sequential")
+    method.names <- c("response","sequential","conjugate")
     
     if(!method%in%method.names)
     {stop("error: specified method '",method,"' is not a valid option; choose, from ", paste(method.names, collapse=", ", sep="") ,".")}

@@ -122,7 +122,7 @@ extern "C" {
 	Rprintf("\tnu Unif hyperpriors a=%.5f and b=%.5f\n", nuUnifa, nuUnifb);	  
       }
 #ifdef _OPENMP
-      Rprintf("\nSource compiled with OpenMP support and model fit using %i threads.\n", nThreads);
+      Rprintf("\nSource compiled with OpenMP support and model fit using %i thread(s).\n", nThreads);
 #else
       Rprintf("\n\nSource not compiled with OpenMP support.\n");
 #endif
@@ -171,7 +171,7 @@ extern "C" {
 
     //make the neighbor index
     if(verbose){
-      Rprintf("-------------------------------------------------\n");
+      Rprintf("----------------------------------------\n");
       Rprintf("\tBuilding neighbor index\n");
       #ifdef Win32
         R_FlushConsole();
@@ -253,9 +253,9 @@ extern "C" {
     F77_NAME(dgemm)(ytran, ntran, &p, &p, &n, &one, X, &n, X, &n, &zero, XtX, &p);
 
     if(verbose){
-      Rprintf("-------------------------------------------------\n");
+      Rprintf("----------------------------------------\n");
       Rprintf("\t\tSampling\n");
-      Rprintf("-------------------------------------------------\n");
+      Rprintf("----------------------------------------\n");
       #ifdef Win32
         R_FlushConsole();
       #endif
@@ -438,7 +438,7 @@ extern "C" {
       F77_NAME(dcopy)(&nTheta, theta, &inc, &REAL(thetaSamples_r)[s*nTheta], &inc);
       F77_NAME(dcopy)(&n, w, &inc, &REAL(wSamples_r)[s*n], &inc);
       
-     //report
+      //report
       if(status == nReport){
 	if(verbose){
 	  Rprintf("Sampled: %i of %i, %3.2f%%\n", s, nSamples, 100.0*s/nSamples);
