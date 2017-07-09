@@ -17,6 +17,78 @@ library('spNNGP')
 
 base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 cleanEx()
+nameEx("spConjNNGP")
+### * spConjNNGP
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: spConjNNGP
+### Title: Function for fitting univariate Bayesian conjugate spatial
+###   regression models
+### Aliases: spConjNNGP
+### Keywords: model
+
+### ** Examples
+
+## Not run: 
+##D rmvn <- function(n, mu=0, V = matrix(1)){
+##D   p <- length(mu)
+##D   if(any(is.na(match(dim(V),p))))
+##D     stop("Dimension problem!")
+##D   D <- chol(V)
+##D   t(matrix(rnorm(n*p), ncol=p)##D 
+##D }
+##D 
+##D set.seed(1)
+##D 
+##D n <- 1000
+##D coords <- cbind(runif(n,0,1), runif(n,0,1))
+##D 
+##D x <- as.matrix(cbind(1, rnorm(n)))
+##D 
+##D B <- as.matrix(c(1,5))
+##D 
+##D sigma.sq <- 5
+##D tau.sq <- 0.1
+##D phi <- 3/0.5
+##D 
+##D D <- as.matrix(dist(coords))
+##D R <- exp(-phi*D)
+##D w <- rmvn(1, rep(0,n), sigma.sq*R)
+##D y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
+##D 
+##D sigma.sq.IG <- c(2, sigma.sq)
+##D 
+##D cov.model <- "matern"
+##D 
+##D #theta.alpha <- c(3/0.5, tau.sq/sigma.sq, 2)
+##D #names(theta.alpha) <- c("phi", "alpha", "nu")
+##D 
+##D n.test.sets <- 10
+##D theta.alpha <- cbind(seq(phi,30,length.out=n.test.sets),
+##D                      seq(tau.sq/sigma.sq,5,length.out=n.test.sets),
+##D                      seq(0.5,2,length.out=n.test.set))
+##D 
+##D colnames(theta.alpha) <- c("phi", "alpha", "nu")
+##D 
+##D m.1 <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
+##D                   X.0 = x, coords.0 = coords,
+##D                   k.fold = 5, score.rule = "crps",
+##D                   n.omp.threads = 2,
+##D                   theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model)
+##D 
+##D m.1$beta.hat
+##D m.1$theta.alpha.sigmaSq
+##D m.1$k.fold.scores
+##D 
+## End(Not run)
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("spConjNNGP", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
 nameEx("spNNGP")
 ### * spNNGP
 

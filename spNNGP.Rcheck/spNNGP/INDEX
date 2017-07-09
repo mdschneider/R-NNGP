@@ -1,2 +1,4 @@
+spConjNNGP              Function for fitting univariate Bayesian
+                        conjugate spatial regression models
 spNNGP                  Function for fitting univariate Bayesian
                         spatial regression models

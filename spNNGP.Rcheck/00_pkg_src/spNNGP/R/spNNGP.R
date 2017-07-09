@@ -56,7 +56,7 @@ spNNGP <- function(formula, data = parent.frame(), coords, method = "response", 
     method.names <- c("response","sequential")
     
     if(!method%in%method.names)
-    {stop("error: specified method '",method,"' is not a valid option; choose, from ", paste(method.names, collapse=", ", sep="") ,".")}
+    {stop("error: specified method '",method,"' is not a valid option; choose from ", paste(method.names, collapse=", ", sep="") ,".")}
         
     ####################################################
     ##Covariance model
@@ -66,7 +66,7 @@ spNNGP <- function(formula, data = parent.frame(), coords, method = "response", 
     cov.model.names <- c("exponential","spherical","matern","gaussian")##order much match util.cpp spCor
     
     if(!cov.model%in%cov.model.names)
-    {stop("error: specified cov.model '",cov.model,"' is not a valid option; choose, from ", paste(cov.model.names, collapse=", ", sep="") ,".")}
+    {stop("error: specified cov.model '",cov.model,"' is not a valid option; choose from ", paste(cov.model.names, collapse=", ", sep="") ,".")}
     
     cov.model.indx <- which(cov.model == cov.model.names)-1##obo for cov model lookup on c side
     storage.mode(cov.model.indx) <- "integer"

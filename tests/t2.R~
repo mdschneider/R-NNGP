@@ -1,0 +1,53 @@
+rm(list=ls())
+
+library(spNNGP)
+
+rmvn <- function(n, mu=0, V = matrix(1)){
+  p <- length(mu)
+  if(any(is.na(match(dim(V),p))))
+    stop("Dimension problem!")
+  D <- chol(V)
+  t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
+}
+
+set.seed(1)
+
+n <- 1000
+coords <- cbind(runif(n,0,1), runif(n,0,1))
+
+x <- as.matrix(cbind(1, rnorm(n)))
+
+B <- as.matrix(c(1,5))
+
+sigma.sq <- 5
+tau.sq <- 0.1
+phi <- 3/0.5
+
+D <- as.matrix(dist(coords))
+R <- exp(-phi*D)
+w <- rmvn(1, rep(0,n), sigma.sq*R)
+y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
+
+sigma.sq.IG <- c(2, sigma.sq)
+
+cov.model <- "matern"
+
+#theta.alpha <- c(3/0.5, tau.sq/sigma.sq, 2)
+#names(theta.alpha) <- c("phi", "alpha", "nu")
+
+n.test.sets <- 10
+theta.alpha <- cbind(seq(phi,30,length.out=n.test.sets),
+                     seq(tau.sq/sigma.sq,5,length.out=n.test.sets),
+                     seq(0.5,2,length.out=n.test.set))
+
+colnames(theta.alpha) <- c("phi", "alpha", "nu")
+
+m.1 <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
+                  X.0 = x, coords.0 = coords,
+                  k.fold = 5, score.rule = "crps",
+                  n.omp.threads = 2,
+                  theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model)
+
+m.1$beta.hat
+m.1$theta.alpha.sigmaSq
+m.1$k.fold.scores

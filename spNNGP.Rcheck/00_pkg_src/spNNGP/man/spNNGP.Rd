@@ -64,7 +64,7 @@ n.omp.threads to up to the number of hyperthreaded cores.}
 }
 
 \value{
-  An object of class \code{spNNGP}, which is a list comprising:
+  An object of class \code{rNNGP} or \code{cNNGP} depending on the \code{method}, which is a list comprising:
   \item{p.beta.samples}{a \code{coda} object of posterior samples for
   the regression coefficients. }
   \item{p.theta.samples}{a \code{coda} object of posterior samples for

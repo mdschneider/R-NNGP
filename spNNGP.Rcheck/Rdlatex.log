@@ -69,13 +69,17 @@ No file Rd2.aux.
 (/usr/share/texlive/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def) [1{/var/lib/texmf/fonts
-/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (13.23799pt too wide) in paragraph at lines 69--81
+/map/pdftex/updmap/pdftex.map}] [2] [3]
+Overfull \hbox (4.38104pt too wide) in paragraph at lines 155--155
+ []                  \T1/zi4/m/n/9 theta.alpha = theta.alpha, sigma.sq.IG = sig
+ma.sq.IG, cov.model = cov.model)[] 
+(/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def) [4]
+Overfull \hbox (13.23799pt too wide) in paragraph at lines 202--214
 []\T1/ptm/m/n/10 a list with each tag cor-re-spond-ing to a pa-ram-e-ter name. 
 Valid tags are \T1/zi4/m/n/10 sigma.sq.ig\T1/ptm/m/n/10 ,
-[2] [3]
+[5] [6]
 No file Rd2.ind.
-[4] (/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.aux)
+[7] (/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.aux)
 
 Package rerunfilecheck Warning: File `Rd2.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
@@ -94,7 +98,7 @@ r7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utm
 ri8a.pfb>
-Output written on Rd2.pdf (4 pages, 110421 bytes).
+Output written on Rd2.pdf (7 pages, 121614 bytes).
 Transcript written on Rd2.log.
 This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex)
  restricted \write18 enabled.
@@ -154,27 +158,31 @@ Package hyperref Warning: Option `pagebackref' has already been used,
 (/usr/share/texlive/texmf-dist/tex/latex/base/omsenc.dfu)
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1enc.dfu)))
 Writing index file Rd2.idx
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.aux)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.aux)
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ptm.fd)
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 ) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.out)
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.out)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.out)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.out)
 (/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def)
 (/usr/share/texlive/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd)
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.toc)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.toc)
 (/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def) [1{/var/lib/texmf/fonts
-/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (13.23799pt too wide) in paragraph at lines 69--81
+/map/pdftex/updmap/pdftex.map}] [2] [3]
+Overfull \hbox (4.38104pt too wide) in paragraph at lines 155--155
+ []                  \T1/zi4/m/n/9 theta.alpha = theta.alpha, sigma.sq.IG = sig
+ma.sq.IG, cov.model = cov.model)[] 
+(/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def) [4]
+Overfull \hbox (13.23799pt too wide) in paragraph at lines 202--214
 []\T1/ptm/m/n/10 a list with each tag cor-re-spond-ing to a pa-ram-e-ter name. 
 Valid tags are \T1/zi4/m/n/10 sigma.sq.ig\T1/ptm/m/n/10 ,
-[2] [3]
+[5] [6]
 No file Rd2.ind.
-[4] (/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.aux) )
+[7] (/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.aux) )
 (see the transcript file for additional information){/usr/share/texlive/texmf-d
 ist/fonts/enc/dvips/base/8r.enc}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/
 inconsolata/i4-t1-0.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/incon
@@ -187,12 +195,12 @@ r7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utm
 ri8a.pfb>
-Output written on Rd2.pdf (4 pages, 110588 bytes).
+Output written on Rd2.pdf (7 pages, 121891 bytes).
 Transcript written on Rd2.log.
 This is makeindex, version 2.15 [TeX Live 2015] (kpathsea + Thai support).
-Scanning input file Rd2.idx....done (2 entries accepted, 0 rejected).
-Sorting entries....done (2 comparisons).
-Generating output file Rd2.ind....done (10 lines written, 0 warnings).
+Scanning input file Rd2.idx....done (4 entries accepted, 0 rejected).
+Sorting entries....done (10 comparisons).
+Generating output file Rd2.ind....done (12 lines written, 0 warnings).
 Output written in Rd2.ind.
 Transcript written in Rd2.ilg.
 This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex)
@@ -253,26 +261,30 @@ Package hyperref Warning: Option `pagebackref' has already been used,
 (/usr/share/texlive/texmf-dist/tex/latex/base/omsenc.dfu)
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1enc.dfu)))
 Writing index file Rd2.idx
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.aux)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.aux)
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ptm.fd)
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 ) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.out)
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.out)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.out)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.out)
 (/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def)
 (/usr/share/texlive/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd)
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.toc)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.toc)
 (/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def) [1{/var/lib/texmf/fonts
-/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (13.23799pt too wide) in paragraph at lines 69--81
+/map/pdftex/updmap/pdftex.map}] [2] [3]
+Overfull \hbox (4.38104pt too wide) in paragraph at lines 155--155
+ []                  \T1/zi4/m/n/9 theta.alpha = theta.alpha, sigma.sq.IG = sig
+ma.sq.IG, cov.model = cov.model)[] 
+(/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def) [4]
+Overfull \hbox (13.23799pt too wide) in paragraph at lines 202--214
 []\T1/ptm/m/n/10 a list with each tag cor-re-spond-ing to a pa-ram-e-ter name. 
 Valid tags are \T1/zi4/m/n/10 sigma.sq.ig\T1/ptm/m/n/10 ,
-[2] [3] (/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.ind [4] [5])
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.aux)
+[5] [6] (/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.ind [7] [8])
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.aux)
 
 Package rerunfilecheck Warning: File `Rd2.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
@@ -291,12 +303,12 @@ r7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utm
 ri8a.pfb>
-Output written on Rd2.pdf (5 pages, 111532 bytes).
+Output written on Rd2.pdf (8 pages, 122972 bytes).
 Transcript written on Rd2.log.
 This is makeindex, version 2.15 [TeX Live 2015] (kpathsea + Thai support).
-Scanning input file Rd2.idx....done (2 entries accepted, 0 rejected).
-Sorting entries....done (2 comparisons).
-Generating output file Rd2.ind....done (10 lines written, 0 warnings).
+Scanning input file Rd2.idx....done (4 entries accepted, 0 rejected).
+Sorting entries....done (10 comparisons).
+Generating output file Rd2.ind....done (12 lines written, 0 warnings).
 Output written in Rd2.ind.
 Transcript written in Rd2.ilg.
 This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex)
@@ -357,26 +369,30 @@ Package hyperref Warning: Option `pagebackref' has already been used,
 (/usr/share/texlive/texmf-dist/tex/latex/base/omsenc.dfu)
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1enc.dfu)))
 Writing index file Rd2.idx
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.aux)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.aux)
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ptm.fd)
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 ) (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.out)
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.out)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.out)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.out)
 (/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def)
 (/usr/share/texlive/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd)
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.toc)
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.toc)
 (/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def) [1{/var/lib/texmf/fonts
-/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (13.23799pt too wide) in paragraph at lines 69--81
+/map/pdftex/updmap/pdftex.map}] [2] [3]
+Overfull \hbox (4.38104pt too wide) in paragraph at lines 155--155
+ []                  \T1/zi4/m/n/9 theta.alpha = theta.alpha, sigma.sq.IG = sig
+ma.sq.IG, cov.model = cov.model)[] 
+(/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def) [4]
+Overfull \hbox (13.23799pt too wide) in paragraph at lines 202--214
 []\T1/ptm/m/n/10 a list with each tag cor-re-spond-ing to a pa-ram-e-ter name. 
 Valid tags are \T1/zi4/m/n/10 sigma.sq.ig\T1/ptm/m/n/10 ,
-[2] [3] (/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.ind [4] [5])
-(/tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1/Rd2.aux) )
+[5] [6] (/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.ind [7] [8])
+(/tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77/Rd2.aux) )
 (see the transcript file for additional information){/usr/share/texlive/texmf-d
 ist/fonts/enc/dvips/base/8r.enc}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/
 inconsolata/i4-t1-0.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/incon
@@ -389,8 +405,8 @@ r7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utm
 ri8a.pfb>
-Output written on Rd2.pdf (5 pages, 111747 bytes).
+Output written on Rd2.pdf (8 pages, 123707 bytes).
 Transcript written on Rd2.log.
 Saving output to ‘spNNGP-manual.pdf’ ...
 Done
-You may want to clean up by 'rm -rf /tmp/RtmpVPnUuN/Rd2pdf29fe7ce3e7f1'
+You may want to clean up by 'rm -rf /tmp/RtmpU88Ktu/Rd2pdf2f4115f13b77'

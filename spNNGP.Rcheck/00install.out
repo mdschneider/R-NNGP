@@ -1,10 +1,11 @@
 * installing *source* package ‘spNNGP’ ...
 ** libs
+g++  -I/usr/local/lib/R/include -DNDEBUG   -I/usr/local/include  -fopenmp -fpic  -g -O2  -c cNNGP.cpp -o cNNGP.o
 g++  -I/usr/local/lib/R/include -DNDEBUG   -I/usr/local/include  -fopenmp -fpic  -g -O2  -c init.cpp -o init.o
 g++  -I/usr/local/lib/R/include -DNDEBUG   -I/usr/local/include  -fopenmp -fpic  -g -O2  -c rNNGP.cpp -o rNNGP.o
 g++  -I/usr/local/lib/R/include -DNDEBUG   -I/usr/local/include  -fopenmp -fpic  -g -O2  -c sNNGP.cpp -o sNNGP.o
 g++  -I/usr/local/lib/R/include -DNDEBUG   -I/usr/local/include  -fopenmp -fpic  -g -O2  -c util.cpp -o util.o
-g++ -shared -L/usr/local/lib/R/lib -L/usr/local/lib -o spNNGP.so init.o rNNGP.o sNNGP.o util.o -L/usr/local/lib/R/lib -lRlapack -L/usr/local/lib/R/lib -lRblas -lgfortran -lm -lquadmath -fopenmp -L/usr/local/lib/R/lib -lR
+g++ -shared -L/usr/local/lib/R/lib -L/usr/local/lib -o spNNGP.so cNNGP.o init.o rNNGP.o sNNGP.o util.o -L/usr/local/lib/R/lib -lRlapack -L/usr/local/lib/R/lib -lRblas -lgfortran -lm -lquadmath -fopenmp -L/usr/local/lib/R/lib -lR
 installing to /home/andy/Rdevel/R-NNGP/spNNGP.Rcheck/spNNGP/libs
 ** R
 ** preparing package for lazy loading
