@@ -9,8 +9,7 @@
 }
 
 \usage{
-spNNGP(formula, data = parent.frame(), coords, method = "response",
-n.neighbors = 15,
+spNNGP(formula, data = parent.frame(), coords, method = "response", n.neighbors = 15,
       starting, tuning, priors, cov.model = "exponential",
       n.samples, n.omp.threads = 1, verbose=TRUE, n.report=100, ...)
 }
@@ -23,16 +22,20 @@ n.neighbors = 15,
     \code{environment(formula)}, typically the environment from which \code{spNNGP} is called.  }
   \item{coords}{an \eqn{n \times 2}{n x 2} matrix of the observation coordinates
     in \eqn{R^2}{R^2} (e.g., easting and northing). }
-  \item{method}{a quoted keyword that specifies the type of NNGP
-  sampling algorithm to use. Supported method key words are: \code{"response"} and
+  \item{method}{a quoted keyword that specifies the NNGP sampling algorithm. Supported method key words are: \code{"response"} and
   \code{"sequential"}. See below for details.}
   \item{n.neighbors}{number of neighbors used in the NNGP.}
   \item{starting}{a list with each tag corresponding to a
-    parameter name. Valid tags are \code{beta}, \code{sigma.sq},
-    \code{tau.sq}, \code{phi}, and \code{nu}.  The value portion of each tag is the parameter's starting value. }
+    parameter name. Valid tags are \code{sigma.sq},
+    \code{tau.sq}, \code{phi}, and \code{nu}. \code{nu} needs to be
+  specified if \code{cov.model="matern"}. The value portion of each
+  tag is the parameter's starting value. }
   \item{tuning}{a list with each tag corresponding to a
     parameter name. Valid tags are \code{sigma.sq},
-    \code{tau.sq}, \code{phi}, and \code{nu}. The value portion of each tag defines the variance of the Metropolis sampler Normal proposal distribution.}
+    \code{tau.sq}, \code{phi}, and \code{nu}. If \code{method="sequential"}
+  then only \code{phi} and \code{nu} need to be specified. The value portion of each
+  tag defines the variance of the Metropolis sampler Normal proposal
+  distribution. }
   \item{priors}{a list with each tag corresponding to a
     parameter name. Valid tags are \code{sigma.sq.ig},
     \code{tau.sq.ig}, \code{phi.unif}. Variance parameters, \code{simga.sq} and
@@ -54,8 +57,8 @@ n.neighbors = 15,
   \item{n.samples}{the number of posterior samples to collect.}
   \item{n.omp.threads}{a positive integer indicating
 the number of threads to use for SMP parallel processing. The package must
-be compiled for OpenMP support. For most Intel-based machines, we recommend setting
-n.omp.threads to up to the number of hyperthreaded cores.}
+be compiled for OpenMP support. For most Intel-based machines, we
+  recommend setting \code{n.omp.threads} to up to the number of hyperthreaded cores.}
   \item{verbose}{if \code{TRUE}, model specification and progress of the
     sampler is printed to the screen. Otherwise, nothing is printed to
     the screen.}
@@ -64,12 +67,12 @@ n.omp.threads to up to the number of hyperthreaded cores.}
 }
 
 \value{
-  An object of class \code{rNNGP} or \code{cNNGP} depending on the \code{method}, which is a list comprising:
+  An object of class \code{rNNGP} or \code{sNNGP} depending on the \code{method}, which is a list comprising:
   \item{p.beta.samples}{a \code{coda} object of posterior samples for
   the regression coefficients. }
   \item{p.theta.samples}{a \code{coda} object of posterior samples for
   covariance parameters. }
-\item{run.time}{execution times for building the nearest neighbor index
+\item{run.time}{execution time for building the nearest neighbor index
   and MCMC sampler reported using \code{proc.time()}.}
   The return object will include additional data used for subsequent
   prediction and/or model fit evaluation.
@@ -83,11 +86,8 @@ The \emph{no nugget} model is specified by setting \code{tau.sq} to zero
 in the \code{starting} and \code{tuning} lists.
 }
 
-
 \references{
-
   Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016) Hierarchical Nearest-Neighbor Gaussian process models for large geostatistical datasets. Journal of the American Statistical Association, 111:800-812.
-
 }
 
 \author{
@@ -95,6 +95,7 @@ in the \code{starting} and \code{tuning} lists.
   Abhirup Datta \email{abhidatta@jhu.edu}, \cr
   Sudipto Banerjee \email{sudipto@ucla.edu}
 }
+
 
 \examples{
 \dontrun{
@@ -104,49 +105,69 @@ rmvn <- function(n, mu=0, V = matrix(1)){
   if(any(is.na(match(dim(V),p))))
     stop("Dimension problem!")
   D <- chol(V)
-  t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
+  t(matrix(rnorm(n*p), ncol=p)\%*\%D + rep(mu,rep(n,p)))
 }
 
+##Make some data
 set.seed(1)
-
-n <- 5000
+n <- 2000
 coords <- cbind(runif(n,0,1), runif(n,0,1))
-X <- as.matrix(cbind(1, rnorm(n)))
+
+x <- cbind(1, rnorm(n))
 
 B <- as.matrix(c(1,5))
-p <- length(B)
 
-sigma.sq <- 2
+sigma.sq <- 5
 tau.sq <- 1
 phi <- 3/0.5
 
 D <- as.matrix(dist(coords))
 R <- exp(-phi*D)
 w <- rmvn(1, rep(0,n), sigma.sq*R)
-y <- rnorm(n, X%*%B + w, sqrt(tau.sq))
+y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
-n.samples <- 2000
+ho <- sample(1:n, 1000)
 
-starting <- list("phi"=3/0.5, "sigma.sq"=5, "tau.sq"=1)
+y.ho <- y[ho]
+x.ho <- x[ho,,drop=FALSE]
+w.ho <- w[ho]
+coords.ho <- coords[ho,]
+
+y <- y[-ho]
+x <- x[-ho,,drop=FALSE]
+w <- w[-ho,,drop=FALSE]
+coords <- coords[-ho,]
+
+##Fit a Response and Sequential NNGP model
+n.samples <- 1000
+
+starting <- list("phi"=phi, "sigma.sq"=5, "tau.sq"=1)
 
 tuning <- list("phi"=0.1, "sigma.sq"=0.1, "tau.sq"=0.1)
 
-priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 1), "tau.sq.IG"=c(2, 1))
+priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 5), "tau.sq.IG"=c(2, 1))
 
 cov.model <- "exponential"
 
 n.report <- 500
 verbose <- TRUE
 
-m.1 <- spNNGP(y~X-1, coords=coords, starting=starting, n.neighbors=10,
+m.s <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.neighbors=10,
               tuning=tuning, priors=priors, cov.model=cov.model,
               n.samples=n.samples, n.omp.threads=2, verbose=verbose, n.report=n.report)
 
-plot(mcmc(m.1$p.beta.samples), density=FALSE)
+round(summary(m.s$p.beta.samples)$quantiles[,c(3,1,5)],2)
+round(summary(m.s$p.theta.samples)$quantiles[,c(3,1,5)],2)
 
-plot(mcmc(m.1$p.theta.samples), density=FALSE)
+m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neighbors=10,
+              tuning=tuning, priors=priors, cov.model=cov.model,
+              n.samples=n.samples, n.omp.threads=2, verbose=verbose, n.report=n.report)
+
+round(summary(m.r$p.beta.samples)$quantiles[,c(3,1,5)],2)
+round(summary(m.r$p.theta.samples)$quantiles[,c(3,1,5)],2)
 
 }
 }
+
 
 \keyword{model}

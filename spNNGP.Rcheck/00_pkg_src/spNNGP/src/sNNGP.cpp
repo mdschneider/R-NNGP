@@ -29,7 +29,9 @@ void updateBF(double *B, double *F, double *c, double *C, double *D, double *d, 
 #pragma omp parallel for private(k, l, info, threadID)
 #endif
     for(i = 0; i < n; i++){
+#ifdef _OPENMP
       threadID = omp_get_thread_num();
+#endif
       if(i > 0){
 	for(k = 0; k < nnIndxLU[n+i]; k++){
 	  c[nnIndxLU[i]+k] = sigmaSq*spCor(d[nnIndxLU[i]+k], phi, nu, covModel, &bk[threadID*nb]);

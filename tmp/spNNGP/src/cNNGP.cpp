@@ -12,7 +12,7 @@
 #endif
 
 //Description: update B and F.
-void updateBF(double *B, double *F, double *c, double *C, double *D, double *d, int *nnIndxLU, int *CIndx, int n, double phi, double alpha, double nu, int covModel, double *bk, double nuMax){
+void updateConjBF(double *B, double *F, double *c, double *C, double *D, double *d, int *nnIndxLU, int *CIndx, int n, double phi, double alpha, double nu, int covModel, double *bk, double nuMax){
     
   int i, k, l;
   int info = 0;
@@ -29,7 +29,9 @@ void updateBF(double *B, double *F, double *c, double *C, double *D, double *d, 
 #pragma omp parallel for private(k, l, info, threadID)
 #endif
     for(i = 0; i < n; i++){
+#ifdef _OPENMP   
       threadID = omp_get_thread_num();
+#endif
       if(i > 0){
 	for(k = 0; k < nnIndxLU[n+i]; k++){
 	  c[nnIndxLU[i]+k] = spCor(d[nnIndxLU[i]+k], phi, nu, covModel, &bk[threadID*nb]);
@@ -256,7 +258,7 @@ extern "C" {
       }
             
       //update B and F
-      updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, phi, alpha, nu, covModel, bk, nuMax);
+      updateConjBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, phi, alpha, nu, covModel, bk, nuMax);
 
       //estimation
       for(i = 0; i < p; i++){
@@ -322,7 +324,7 @@ extern "C" {
 	//make v_y and var(y)
 	F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc);
 	
-	y0HatVar[k*n0+i] = 2.0*ab[k*2+1] * (F77_NAME(ddot)(&p, tmp_p, &inc, tmp_p2, &inc) + 1.0 + alpha - F77_NAME(ddot)(&m, &tmp_mn0[i*m], &inc, &c0[i*m], &inc))/(2.0*ab[k*2]-1.0);
+	y0HatVar[k*n0+i] = ab[k*2+1] * (F77_NAME(ddot)(&p, tmp_p, &inc, tmp_p2, &inc) + 1.0 + alpha - F77_NAME(ddot)(&m, &tmp_mn0[i*m], &inc, &c0[i*m], &inc))/(ab[k*2]-1.0);
 	
       }
    

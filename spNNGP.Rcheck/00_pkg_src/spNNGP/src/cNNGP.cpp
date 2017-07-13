@@ -29,7 +29,9 @@ void updateConjBF(double *B, double *F, double *c, double *C, double *D, double 
 #pragma omp parallel for private(k, l, info, threadID)
 #endif
     for(i = 0; i < n; i++){
+#ifdef _OPENMP   
       threadID = omp_get_thread_num();
+#endif
       if(i > 0){
 	for(k = 0; k < nnIndxLU[n+i]; k++){
 	  c[nnIndxLU[i]+k] = spCor(d[nnIndxLU[i]+k], phi, nu, covModel, &bk[threadID*nb]);
@@ -322,7 +324,7 @@ extern "C" {
 	//make v_y and var(y)
 	F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc);
 	
-	y0HatVar[k*n0+i] = 2.0*ab[k*2+1] * (F77_NAME(ddot)(&p, tmp_p, &inc, tmp_p2, &inc) + 1.0 + alpha - F77_NAME(ddot)(&m, &tmp_mn0[i*m], &inc, &c0[i*m], &inc))/(2.0*ab[k*2]-1.0);
+	y0HatVar[k*n0+i] = ab[k*2+1] * (F77_NAME(ddot)(&p, tmp_p, &inc, tmp_p2, &inc) + 1.0 + alpha - F77_NAME(ddot)(&m, &tmp_mn0[i*m], &inc, &c0[i*m], &inc))/(ab[k*2]-1.0);
 	
       }
    
@@ -364,10 +366,10 @@ extern "C" {
 
     if(n0 > 0){
       SET_VECTOR_ELT(result_r, 2, y0Hat_r);
-      SET_VECTOR_ELT(resultName_r, 2, mkChar("y.hat"));
+      SET_VECTOR_ELT(resultName_r, 2, mkChar("y0.hat"));
       
       SET_VECTOR_ELT(result_r, 3, y0HatVar_r);
-      SET_VECTOR_ELT(resultName_r, 3, mkChar("y.hat.var"));
+      SET_VECTOR_ELT(resultName_r, 3, mkChar("y0.hat.var"));
     }
     
     namesgets(result_r, resultName_r);

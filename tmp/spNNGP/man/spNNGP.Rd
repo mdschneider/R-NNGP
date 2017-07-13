@@ -9,7 +9,8 @@
 }
 
 \usage{
-spNNGP(formula, data = parent.frame(), coords, method = "response", n.neighbors,
+spNNGP(formula, data = parent.frame(), coords, method = "response",
+n.neighbors = 15,
       starting, tuning, priors, cov.model = "exponential",
       n.samples, n.omp.threads = 1, verbose=TRUE, n.report=100, ...)
 }
@@ -63,12 +64,12 @@ n.omp.threads to up to the number of hyperthreaded cores.}
 }
 
 \value{
-  An object of class \code{spNNGP}, which is a list comprising:
+  An object of class \code{rNNGP} or \code{cNNGP} depending on the \code{method}, which is a list comprising:
   \item{p.beta.samples}{a \code{coda} object of posterior samples for
   the regression coefficients. }
   \item{p.theta.samples}{a \code{coda} object of posterior samples for
   covariance parameters. }
-\item{run.time}{execution times for building the nearest neighbor index
+\item{run.time}{execution time for building the nearest neighbor index
   and MCMC sampler reported using \code{proc.time()}.}
   The return object will include additional data used for subsequent
   prediction and/or model fit evaluation.

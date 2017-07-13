@@ -43,7 +43,7 @@ spConjNNGP <- function(formula, data = parent.frame(), coords, n.neighbors = 15,
     ##order by x
     ord <- order(coords[,1])
     coords <- coords[ord,]
-    X <- X[ord,]
+    X <- X[ord,,drop=FALSE]
     y <- y[ord]
 
     storage.mode(y) <- "double"
@@ -205,8 +205,8 @@ spConjNNGP <- function(formula, data = parent.frame(), coords, n.neighbors = 15,
                          n.neighbors, sigma.sq.IG, cov.model.indx, n.omp.threads, fold.verbose)
             
             for(j in 1:g){
-                k.fold.scores[j,"crps"] <- k.fold.scores[j,"crps"]+crps(y.ho, out$y.hat[,j], out$y.hat.var[,j])
-                k.fold.scores[j,"rmspe"] <- k.fold.scores[j,"rmspe"]+rmspe(y.ho, out$y.hat[,j])
+                k.fold.scores[j,"crps"] <- k.fold.scores[j,"crps"]+crps(y.ho, out$y.0.hat[,j], out$y.0.hat.var[,j])
+                k.fold.scores[j,"rmspe"] <- k.fold.scores[j,"rmspe"]+rmspe(y.ho, out$y.0.hat[,j])
             }
 
             if(verbose){

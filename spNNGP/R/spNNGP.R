@@ -41,7 +41,7 @@ spNNGP <- function(formula, data = parent.frame(), coords, method = "response", 
     ##order by x
     ord <- order(coords[,1])
     coords <- coords[ord,]
-    X <- X[ord,]
+    X <- X[ord,,drop=FALSE]
     y <- y[ord]
 
     storage.mode(y) <- "double"
@@ -229,8 +229,8 @@ spNNGP <- function(formula, data = parent.frame(), coords, method = "response", 
     out$coords <- coords
     out$ord <- ord
     out$cov.model <- cov.model
-    class(out) <- method
-    
+    out$cov.model.indx <- cov.model.indx
+    class(out) <- nngp
     
     out
     
