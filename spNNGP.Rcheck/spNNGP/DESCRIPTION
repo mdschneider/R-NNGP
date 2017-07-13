@@ -1,0 +1,16 @@
+Package: spNNGP
+Title: Spatial Regression Models using Nearest Neighbor Gaussian
+        Processes
+Version: 0.1.0
+Date: 2017-6-14
+Author: Andrew O. Finley <finleya@msu.edu>, Abhirup Datta <abhidatta@jhu.edu>, Sudipto Banerjee <sudipto@ucla.edu>
+Maintainer: Andrew Finley <finleya@msu.edu>
+Depends: R (>= 1.8.0), coda, Formula, RANN
+Description: Fits Gaussian univariate Bayesian spatial regression models using Nearest Neighbor Gaussian Processes (NNGP).
+License: GPL (>= 2)
+Encoding: UTF-8
+URL: http://blue.for.msu.edu/software.html
+Repository: CRAN
+NeedsCompilation: yes
+Packaged: 2017-07-13 20:20:06 UTC; andy
+Built: R 3.5.0; x86_64-pc-linux-gnu; 2017-07-13 20:20:19 UTC; unix

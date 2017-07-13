@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <R.h>
 #include <Rmath.h>
@@ -29,7 +30,9 @@ void updateBF(double *B, double *F, double *c, double *C, double *D, double *d, 
 #pragma omp parallel for private(k, l, info, threadID)
 #endif
     for(i = 0; i < n; i++){
+#ifdef _OPENMP
       threadID = omp_get_thread_num();
+#endif
       if(i > 0){
 	for(k = 0; k < nnIndxLU[n+i]; k++){
 	  c[nnIndxLU[i]+k] = sigmaSq*spCor(d[nnIndxLU[i]+k], phi, nu, covModel, &bk[threadID*nb]);
@@ -37,7 +40,17 @@ void updateBF(double *B, double *F, double *c, double *C, double *D, double *d, 
 	    C[CIndx[i]+l*nnIndxLU[n+i]+k] = sigmaSq*spCor(D[CIndx[i]+l*nnIndxLU[n+i]+k], phi, nu, covModel, &bk[threadID*nb]); 
 	  }
 	}
-	F77_NAME(dpotrf)(&lower, &nnIndxLU[n+i], &C[CIndx[i]], &nnIndxLU[n+i], &info); if(info != 0){error("c++ error: dpotrf failed\n");}
+	F77_NAME(dpotrf)(&lower, &nnIndxLU[n+i], &C[CIndx[i]], &nnIndxLU[n+i], &info);
+	if(info != 0){
+	  std::cout << "here"  << std::endl;
+	  std::cout << phi  << std::endl;
+	  std::cout << nu << std::endl;
+	  std::cout << sigmaSq  << std::endl;
+	  std::cout << covModel << std::endl;
+	  std::cout << nnIndxLU[n+i]  << std::endl;
+	  std::cout << CIndx[i]  << std::endl;
+	  error("c++ error: dpotrf failed\n");
+	}
 	F77_NAME(dpotri)(&lower, &nnIndxLU[n+i], &C[CIndx[i]], &nnIndxLU[n+i], &info); if(info != 0){error("c++ error: dpotri failed\n");}
 	F77_NAME(dsymv)(&lower, &nnIndxLU[n+i], &one, &C[CIndx[i]], &nnIndxLU[n+i], &c[nnIndxLU[i]], &inc, &zero, &B[nnIndxLU[i]], &inc);
 	F[i] = sigmaSq - F77_NAME(ddot)(&nnIndxLU[n+i], &B[nnIndxLU[i]], &inc, &c[nnIndxLU[i]], &inc);
@@ -122,7 +135,7 @@ extern "C" {
 	Rprintf("\tnu Unif hyperpriors a=%.5f and b=%.5f\n", nuUnifa, nuUnifb);	  
       }
 #ifdef _OPENMP
-      Rprintf("\nSource compiled with OpenMP support and model fit using %i threads.\n", nThreads);
+      Rprintf("\nSource compiled with OpenMP support and model fit using %i thread(s).\n", nThreads);
 #else
       Rprintf("\n\nSource not compiled with OpenMP support.\n");
 #endif
@@ -171,7 +184,7 @@ extern "C" {
 
     //make the neighbor index
     if(verbose){
-      Rprintf("-------------------------------------------------\n");
+      Rprintf("----------------------------------------\n");
       Rprintf("\tBuilding neighbor index\n");
       #ifdef Win32
         R_FlushConsole();
@@ -245,7 +258,7 @@ extern "C" {
     double *tmp_p2 = (double *) R_alloc(p, sizeof(double));
     double *tmp_n = (double *) R_alloc(n, sizeof(double));
     double *XtX = (double *) R_alloc(pp, sizeof(double));
-    double *w = (double *) R_alloc(n, sizeof(double));
+    double *w = (double *) R_alloc(n, sizeof(double)); zeros(w, n);
     double a, v, b, e, mu, var, aij, phiCand, nuCand = 0, nu = 0;
 
     double *bk = (double *) R_alloc(nThreads*(static_cast<int>(1.0+nuUnifb)), sizeof(double));
@@ -253,21 +266,41 @@ extern "C" {
     F77_NAME(dgemm)(ytran, ntran, &p, &p, &n, &one, X, &n, X, &n, &zero, XtX, &p);
 
     if(verbose){
-      Rprintf("-------------------------------------------------\n");
+      Rprintf("----------------------------------------\n");
       Rprintf("\t\tSampling\n");
-      Rprintf("-------------------------------------------------\n");
+      Rprintf("----------------------------------------\n");
       #ifdef Win32
         R_FlushConsole();
       #endif
     }
 
     if(corName == "matern"){nu = theta[nuIndx];}
+    
     updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta[sigmaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+
+
+    std::cout << beta[0] << " " << beta[1]  << std::endl;
     
     GetRNGstate();
     
     for(s = 0; s < nSamples; s++){
 
+      // std::cout << "------------------------------" << std::endl;
+      // std::cout << s  << std::endl;	
+      // std::cout << mu << " " << var << std::endl;
+      // std::cout << beta[0] << " " << beta[1]  << std::endl;
+      // std::cout << "-------" << std::endl;
+      // for(i = 0; i < n; i++){
+      // 	std::cout << w[i]  << " ";
+      // }
+      // std::cout << "-------" << std::endl;
+      // std::cout << theta[phiIndx]  << std::endl;
+      // std::cout << theta[tauSqIndx] << std::endl;
+      // std::cout << theta[sigmaSqIndx]  << std::endl;
+      // std::cout << covModel << std::endl;
+      // std::cout << "------------------------------" << std::endl;
+
+      
       ///////////////
       //update w 
       ///////////////
@@ -313,7 +346,22 @@ extern "C" {
 	tmp_pp[i] = XtX[i]/theta[tauSqIndx];
       }
       
-      F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info); if(info != 0){error("c++ error: dpotrf failed\n");}
+      F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info); 
+      if(info != 0){
+	std::cout << s  << std::endl;	
+	std::cout << mu << " " << var << std::endl;
+	std::cout << beta[0] << " " << beta[1]  << std::endl;
+	std::cout << "-------" << std::endl;
+	for(i = 0; i < n; i++){
+	  std::cout << w[i]  << " ";
+	}
+	std::cout << "-------" << std::endl;
+	std::cout << theta[phiIndx]  << std::endl;
+	std::cout << theta[tauSqIndx] << std::endl;
+	std::cout << theta[sigmaSqIndx]  << std::endl;
+	std::cout << covModel << std::endl;
+	error("c++ error: dpotrf failed\n");
+      }
       F77_NAME(dpotri)(lower, &p, tmp_pp, &p, &info); if(info != 0){error("c++ error: dpotri failed\n");}
       F77_NAME(dsymv)(lower, &p, &one, tmp_pp, &p, tmp_p, &inc, &zero, tmp_p2, &inc);
       F77_NAME(dpotrf)(lower, &p, tmp_pp, &p, &info); if(info != 0){error("c++ error: dpotrf failed\n");}
@@ -323,122 +371,122 @@ extern "C" {
       //update tau^2
       /////////////////////
       for(i = 0; i < n; i++){
-	tmp_n[i] = y[i] - w[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc);
+      	tmp_n[i] = y[i] - w[i] - F77_NAME(ddot)(&p, &X[i], &n, beta, &inc);
       }
       
       theta[tauSqIndx] = 1.0/rgamma(tauSqIGa+n/2.0, 1.0/(tauSqIGb+0.5*F77_NAME(ddot)(&n, tmp_n, &inc, tmp_n, &inc)));
 
-      /////////////////////
-      //update sigma^2
-      /////////////////////
-      a = 0;
+//       /////////////////////
+//       //update sigma^2
+//       /////////////////////
+//       a = 0;
 
-#ifdef _OPENMP
-#pragma omp parallel for private (e, j, b) reduction(+:a, logDet)
-#endif
-      for(i = 0; i < n; i++){
-	if(nnIndxLU[n+i] > 0){
-	  e = 0;
-	  for(j = 0; j < nnIndxLU[n+i]; j++){
-	    e += B[nnIndxLU[i]+j]*w[nnIndx[nnIndxLU[i]+j]];
-	  }
-	  b = w[i] - e;
-	}else{
-	  b = w[i];
-	}	
-	a += b*b/F[i];
-      }
+// #ifdef _OPENMP
+// #pragma omp parallel for private (e, j, b) reduction(+:a, logDet)
+// #endif
+//       for(i = 0; i < n; i++){
+// 	if(nnIndxLU[n+i] > 0){
+// 	  e = 0;
+// 	  for(j = 0; j < nnIndxLU[n+i]; j++){
+// 	    e += B[nnIndxLU[i]+j]*w[nnIndx[nnIndxLU[i]+j]];
+// 	  }
+// 	  b = w[i] - e;
+// 	}else{
+// 	  b = w[i];
+// 	}	
+// 	a += b*b/F[i];
+//       }
 
-      theta[sigmaSqIndx] = 1.0/rgamma(sigmaSqIGa+n/2.0, 1.0/(sigmaSqIGb+0.5*a*theta[sigmaSqIndx]));
+//       theta[sigmaSqIndx] = 1.0/rgamma(sigmaSqIGa+n/2.0, 1.0/(sigmaSqIGb+0.5*a*theta[sigmaSqIndx]));
     
-      ///////////////
-      //update theta
-      ///////////////
-      //current
-      if(corName == "matern"){nu = theta[nuIndx];}
-      updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta[sigmaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
+//       ///////////////
+//       //update theta
+//       ///////////////
+//       //current
+//       if(corName == "matern"){nu = theta[nuIndx];}
+//       updateBF(B, F, c, C, D, d, nnIndxLU, CIndx, n, theta[sigmaSqIndx], theta[phiIndx], nu, covModel, bk, nuUnifb);
       
-      a = 0;
-      logDet = 0;
+//       a = 0;
+//       logDet = 0;
 
-#ifdef _OPENMP
-#pragma omp parallel for private (e, j, b) reduction(+:a, logDet)
-#endif
-      for(i = 0; i < n; i++){
-	if(nnIndxLU[n+i] > 0){
-	  e = 0;
-	  for(j = 0; j < nnIndxLU[n+i]; j++){
-	    e += B[nnIndxLU[i]+j]*w[nnIndx[nnIndxLU[i]+j]];
-	  }
-	  b = w[i] - e;
-	}else{
-	  b = w[i];
-	}	
-	a += b*b/F[i];
-	logDet += log(F[i]);
-      }
+// #ifdef _OPENMP
+// #pragma omp parallel for private (e, j, b) reduction(+:a, logDet)
+// #endif
+//       for(i = 0; i < n; i++){
+// 	if(nnIndxLU[n+i] > 0){
+// 	  e = 0;
+// 	  for(j = 0; j < nnIndxLU[n+i]; j++){
+// 	    e += B[nnIndxLU[i]+j]*w[nnIndx[nnIndxLU[i]+j]];
+// 	  }
+// 	  b = w[i] - e;
+// 	}else{
+// 	  b = w[i];
+// 	}	
+// 	a += b*b/F[i];
+// 	logDet += log(F[i]);
+//       }
       
-      logPostCurrent = -0.5*logDet - 0.5*a;
-      logPostCurrent += log(theta[phiIndx] - phiUnifa) + log(phiUnifb - theta[phiIndx]); 
-      if(corName == "matern"){
-      	logPostCurrent += log(theta[nuIndx] - nuUnifa) + log(nuUnifb - theta[nuIndx]); 
-      }
+//       logPostCurrent = -0.5*logDet - 0.5*a;
+//       logPostCurrent += log(theta[phiIndx] - phiUnifa) + log(phiUnifb - theta[phiIndx]); 
+//       if(corName == "matern"){
+//       	logPostCurrent += log(theta[nuIndx] - nuUnifa) + log(nuUnifb - theta[nuIndx]); 
+//       }
       
-      //candidate
-      phiCand = logitInv(rnorm(logit(theta[phiIndx], phiUnifa, phiUnifb), tuning[phiIndx]), phiUnifa, phiUnifb);
+//       //candidate
+//       phiCand = logitInv(rnorm(logit(theta[phiIndx], phiUnifa, phiUnifb), tuning[phiIndx]), phiUnifa, phiUnifb);
 
-      if(corName == "matern"){
-      	nuCand = logitInv(rnorm(logit(theta[nuIndx], nuUnifa, nuUnifb), tuning[nuIndx]), nuUnifa, nuUnifb);
-      }
+//       if(corName == "matern"){
+//       	nuCand = logitInv(rnorm(logit(theta[nuIndx], nuUnifa, nuUnifb), tuning[nuIndx]), nuUnifa, nuUnifb);
+//       }
       
-      updateBF(BCand, FCand, c, C, D, d, nnIndxLU, CIndx, n, theta[sigmaSqIndx], phiCand, nuCand, covModel, bk, nuUnifb);
+//       updateBF(BCand, FCand, c, C, D, d, nnIndxLU, CIndx, n, theta[sigmaSqIndx], phiCand, nuCand, covModel, bk, nuUnifb);
       
-      a = 0;
-      logDet = 0;
+//       a = 0;
+//       logDet = 0;
       
-#ifdef _OPENMP
-#pragma omp parallel for private (e, j, b) reduction(+:a, logDet)
-#endif
-      for(i = 0; i < n; i++){
-	if(nnIndxLU[n+i] > 0){
-	  e = 0;
-	  for(j = 0; j < nnIndxLU[n+i]; j++){
-	    e += BCand[nnIndxLU[i]+j]*w[nnIndx[nnIndxLU[i]+j]];
-	  }
-	  b = w[i] - e;
-	}else{
-	  b = w[i];
-	  }	
-	  a += b*b/FCand[i];
-	  logDet += log(FCand[i]);
-	}
+// #ifdef _OPENMP
+// #pragma omp parallel for private (e, j, b) reduction(+:a, logDet)
+// #endif
+//       for(i = 0; i < n; i++){
+// 	if(nnIndxLU[n+i] > 0){
+// 	  e = 0;
+// 	  for(j = 0; j < nnIndxLU[n+i]; j++){
+// 	    e += BCand[nnIndxLU[i]+j]*w[nnIndx[nnIndxLU[i]+j]];
+// 	  }
+// 	  b = w[i] - e;
+// 	}else{
+// 	  b = w[i];
+// 	  }	
+// 	  a += b*b/FCand[i];
+// 	  logDet += log(FCand[i]);
+// 	}
       
-      logPostCand = -0.5*logDet - 0.5*a;      
-      logPostCand += log(phiCand - phiUnifa) + log(phiUnifb - phiCand); 
-      if(corName == "matern"){
-      	logPostCand += log(nuCand - nuUnifa) + log(nuUnifb - nuCand); 
-      }
+//       logPostCand = -0.5*logDet - 0.5*a;      
+//       logPostCand += log(phiCand - phiUnifa) + log(phiUnifb - phiCand); 
+//       if(corName == "matern"){
+//       	logPostCand += log(nuCand - nuUnifa) + log(nuUnifb - nuCand); 
+//       }
 
-      if(runif(0.0,1.0) <= exp(logPostCand - logPostCurrent)){
+//       if(runif(0.0,1.0) <= exp(logPostCand - logPostCurrent)){
 
-	std::swap(BCand, B);
-	std::swap(FCand, F);
+// 	std::swap(BCand, B);
+// 	std::swap(FCand, F);
 	
-	theta[phiIndx] = phiCand;
-	if(corName == "matern"){
-	  theta[nuIndx] = nuCand; 
-	}
+// 	theta[phiIndx] = phiCand;
+// 	if(corName == "matern"){
+// 	  theta[nuIndx] = nuCand; 
+// 	}
 	
-	accept++;
-	batchAccept++;
-      }
+// 	accept++;
+// 	batchAccept++;
+//       }
 
       //save samples  
       F77_NAME(dcopy)(&p, beta, &inc, &REAL(betaSamples_r)[s*p], &inc);
       F77_NAME(dcopy)(&nTheta, theta, &inc, &REAL(thetaSamples_r)[s*nTheta], &inc);
       F77_NAME(dcopy)(&n, w, &inc, &REAL(wSamples_r)[s*n], &inc);
       
-     //report
+      //report
       if(status == nReport){
 	if(verbose){
 	  Rprintf("Sampled: %i of %i, %3.2f%%\n", s, nSamples, 100.0*s/nSamples);
