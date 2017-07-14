@@ -23,13 +23,12 @@ spNNGP(formula, data = parent.frame(), coords, method = "response", n.neighbors 
     \code{environment(formula)}, typically the environment from which \code{spNNGP} is called.  }
   \item{coords}{an \eqn{n \times 2}{n x 2} matrix of the observation coordinates
     in \eqn{R^2}{R^2} (e.g., easting and northing). }
-  \item{method}{a quoted keyword that specifies the NNGP sampling algorithm. Supported method key words are: \code{"response"} and
+  \item{method}{a quoted keyword that specifies the NNGP sampling algorithm. Supported method keywords are: \code{"response"} and
   \code{"sequential"}. See below for details.}
   \item{n.neighbors}{number of neighbors used in the NNGP.}
   \item{starting}{a list with each tag corresponding to a
-    parameter name. Valid tags are \code{sigma.sq},
-    \code{tau.sq}, \code{phi}, and \code{nu}. \code{nu} needs to be
-  specified if \code{cov.model="matern"}. The value portion of each
+    parameter name. Valid tags are \code{beta}, \code{sigma.sq},
+    \code{tau.sq}, \code{phi}, and \code{nu}. \code{nu} is only specified if \code{cov.model="matern"}. The value portion of each
   tag is the parameter's starting value. }
   \item{tuning}{a list with each tag corresponding to a
     parameter name. Valid tags are \code{sigma.sq},
@@ -39,7 +38,7 @@ spNNGP(formula, data = parent.frame(), coords, method = "response", n.neighbors 
   distribution. }
   \item{priors}{a list with each tag corresponding to a
     parameter name. Valid tags are \code{sigma.sq.ig},
-    \code{tau.sq.ig}, \code{phi.unif}. Variance parameters, \code{simga.sq} and
+    \code{tau.sq.ig}, \code{phi.unif}, and \code{nu.unif}. Variance parameters, \code{simga.sq} and
     \code{tau.sq}, are assumed to follow an
     inverse-Gamma distribution, whereas the spatial decay \code{phi}
     and smoothness \code{nu} parameters are assumed to follow Uniform distributions. The
@@ -59,16 +58,17 @@ spNNGP(formula, data = parent.frame(), coords, method = "response", n.neighbors 
   \item{n.omp.threads}{a positive integer indicating
 the number of threads to use for SMP parallel processing. The package must
 be compiled for OpenMP support. For most Intel-based machines, we
-  recommend setting \code{n.omp.threads} to up to the number of hyperthreaded cores.}
+  recommend setting \code{n.omp.threads} up to the number of hyperthreaded cores.}
   \item{verbose}{if \code{TRUE}, model specification and progress of the
     sampler is printed to the screen. Otherwise, nothing is printed to
     the screen.}
   \item{search.type}{a quoted keyword that specifies type of nearest
-  neighbor search algorithm. Supported method key words are: \code{"tree"} and
-  \code{"brute"} both will yield the same solution but \code{"tree"}
-  should be much faster.}
-\item{return.neighbors}{if \code{TRUE}, the nearest neighbor index
-  matrix will be returned.}
+    neighbor search algorithm. Supported method key words are: \code{"tree"} and
+    \code{"brute"} both will yield the same solution but \code{"tree"}
+    should be much faster.}
+  \item{return.neighbors}{if \code{TRUE}, a list containing the indices
+    for each locations' nearest neighbors will be returned. See
+    \code{n.indx} below for more details. }
   \item{n.report}{the interval to report Metropolis sampler acceptance and MCMC progress.}  
   \item{...}{currently no additional arguments.  }
 }
@@ -76,12 +76,19 @@ be compiled for OpenMP support. For most Intel-based machines, we
 \value{
   An object of class \code{rNNGP} or \code{sNNGP} depending on the \code{method}, which is a list comprising:
   \item{p.beta.samples}{a \code{coda} object of posterior samples for
-  the regression coefficients. }
+    the regression coefficients. }
   \item{p.theta.samples}{a \code{coda} object of posterior samples for
-  covariance parameters. }
-\item{run.time}{execution time for building the nearest neighbor index
-  and MCMC sampler reported using \code{proc.time()}.}
-  The return object will include additional data used for subsequent
+    covariance parameters. }
+  \item{n.indx}{if \code{return.neighbors=TRUE} then \code{n.indx} will
+    be a list of length \eqn{n}{n}. The \eqn{i-th}{i-th} element in the
+    list corresponds to the \eqn{i-th}{i-th} row in the ordered
+    \code{coords} matrix and the elements are the nearest neighbor indices
+    for the given location.}
+  \item{coords}{the input \code{coords} matrix ordered by the first
+    column of that matrix. }
+  \item{run.time}{execution time for building the nearest neighbor index
+    and MCMC sampler reported using \code{proc.time()}.}
+  The return object will include additional objects used for subsequent
   prediction and/or model fit evaluation.
 }
 

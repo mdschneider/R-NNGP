@@ -10,6 +10,7 @@ g++  -I/usr/local/lib/R/include -DNDEBUG   -I/usr/local/include  -fopenmp -fpic 
 g++ -shared -L/usr/local/lib/R/lib -L/usr/local/lib -o spNNGP.so cNNGP.o init.o rNNGP.o rNNGPPredict.o sNNGP.o sNNGPPredict.o util.o -L/usr/local/lib/R/lib -lRlapack -L/usr/local/lib/R/lib -lRblas -lgfortran -lm -lquadmath -fopenmp -L/usr/local/lib/R/lib -lR
 installing to /home/andy/Rdevel/R-NNGP/spNNGP.Rcheck/spNNGP/libs
 ** R
+** data
 ** preparing package for lazy loading
 ** help
 *** installing help indices

@@ -1,3 +1,5 @@
+CHM                     Canopy Height Model from NASA Goddard's LiDAR
+                        Hyperspectral and Thermal (G-LiHT)
 spConjNNGP              Function for fitting univariate Bayesian
                         conjugate spatial regression models
 spNNGP                  Function for fitting univariate Bayesian

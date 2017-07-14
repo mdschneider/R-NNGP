@@ -1,7 +1,7 @@
 \name{spConjNNGP}
 \alias{spConjNNGP}
-\title{Function for fitting univariate Bayesian conjugate spatial regression
-  models}
+\title{Function for fitting univariate Bayesian conjugate spatial
+  regression models}
 
 \description{
   The function \code{spConjNNGP} fits Gaussian univariate Bayesian conjugate spatial
@@ -28,7 +28,7 @@
   \item{n.neighbors}{number of neighbors used in the NNGP.}
   \item{theta.alpha}{a vector or matrix of parameter values for
   \code{phi}, \code{nu}, and \code{alpha}, where
-  \eqn{\alpha=\tau^2/\sigma^2}{alpha=tau^2/sigma^2} and \code{nu} is only required if \code{cov.model="matern"}. A vector is passed if you want to run the model using one set of parameters. The vector elements must be named and hold values for \code{phi}, \code{nu}, and \code{alpha}. If a matrix is passed, columns must be named and hold values for \code{phi}, \code{alpha}, and \code{nu}. Each row in the matrix defines a set of parameters for which the the model will be run. }
+  \eqn{\alpha=\tau^2/\sigma^2}{alpha=tau^2/sigma^2} and \code{nu} is only required if \code{cov.model="matern"}. A vector is passed if you want to run the model using one set of parameters. The vector elements must be named and hold values for \code{phi}, \code{nu}, and \code{alpha}. If a matrix is passed, columns must be named and hold values for \code{phi}, \code{alpha}, and \code{nu}. Each row in the matrix defines a set of parameters for which the model will be run. }
   \item{sigma.sq.IG}{a vector of length two that holds the hyperparameters, \emph{shape} and \emph{scale} respectively, for the inverse-Gamma prior on \eqn{\sigma^2}{sigma^2}. }
   \item{cov.model}{a quoted keyword that specifies the covariance
     function used to model the spatial dependence structure among the
@@ -43,15 +43,15 @@
   \item{n.omp.threads}{a positive integer indicating
 the number of threads to use for SMP parallel processing. The package must
 be compiled for OpenMP support. For most Intel-based machines, we recommend setting
-\code{n.omp.threads} to up to the number of hyperthreaded cores.}
+\code{n.omp.threads} up to the number of hyperthreaded cores.}
   \item{search.type}{a quoted keyword that specifies type of nearest
   neighbor search algorithm. Supported method key words are: \code{"tree"} and
   \code{"brute"} both will yield the same solution but \code{"tree"}
   should be much faster.}
-\item{return.neighbors}{if \code{TRUE}, the nearest neighbor index
-  matrix will be returned.}
-  \item{verbose}{if \code{TRUE}, model specification and progress of the
-    sampler is printed to the screen. Otherwise, nothing is printed to
+\item{return.neighbors}{if \code{TRUE}, a list containing the indices
+  for each locations' nearest neighbors will be returned. See
+  \code{n.indx} below for more details. }
+  \item{verbose}{if \code{TRUE}, model specification and progress is printed to the screen. Otherwise, nothing is printed to
     the screen.}
   \item{...}{currently no additional arguments.  }
 }
@@ -64,10 +64,18 @@ be compiled for OpenMP support. For most Intel-based machines, we recommend sett
   \item{k.fold.scores}{results from the k-fold cross-validation if
     \code{k.fold} is specified.}
   \item{y.0.hat}{prediction if \code{X.0} and \code{coords.0} are specified.}
-  \item{y.0.var.hat}{prediction variance if \code{X.0} and \code{coords.0} are specified.}
-\item{run.time}{execution time for building the nearest neighbor index
-  and parameter estimation reported using \code{proc.time()}.}
-  The return object will include additional data used for subsequent
+  \item{y.0.var.hat}{prediction variance if \code{X.0} and
+    \code{coords.0} are specified.}
+  \item{n.indx}{if \code{return.neighbors=TRUE} then \code{n.indx} will
+    be a list of length \eqn{n}{n}. The \eqn{i-th}{i-th} element in the
+    list corresponds to the \eqn{i-th}{i-th} row in the ordered
+    \code{coords} matrix and the elements are the nearest neighbor indices
+    for the given location.}
+  \item{coords}{the input \code{coords} matrix ordered by the first
+  column of that matrix. }
+  \item{run.time}{execution time for building the nearest neighbor index
+    and parameter estimation reported using \code{proc.time()}.}
+  The return object will include additional objects used for subsequent
   prediction and/or model fit evaluation.
 }
 

@@ -270,6 +270,10 @@ spConjNNGP <- function(formula, data = parent.frame(), coords, n.neighbors = 15,
         out$k.fold.scores <- k.fold.scores
     }
 
+    if(return.neighbors){
+        out$n.indx <- mk.n.indx.list(out$n.indx, n, n.neighbors)
+    }
+
     class(out) <- "cNNGP"
         
     out

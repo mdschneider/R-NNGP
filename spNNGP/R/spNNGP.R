@@ -243,6 +243,11 @@ spNNGP <- function(formula, data = parent.frame(), coords, method = "response", 
     out$ord <- ord
     out$cov.model <- cov.model
     out$cov.model.indx <- cov.model.indx
+
+    if(return.neighbors){
+        out$n.indx <- mk.n.indx.list(out$n.indx, n, n.neighbors)
+    }
+
     class(out) <- nngp
     
     out

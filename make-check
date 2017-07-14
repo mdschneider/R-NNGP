@@ -1,0 +1,1 @@
+R CMD build --resave-data && R CMD check spNNGP_0.1.0.tar.gz

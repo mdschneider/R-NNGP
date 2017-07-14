@@ -28,7 +28,7 @@ n.omp.threads = 1, verbose=TRUE, n.report=100, ...)
   \item{n.omp.threads}{a positive integer indicating
     the number of threads to use for SMP parallel processing. The package must
     be compiled for OpenMP support. For most Intel-based machines, we recommend setting
-    \code{n.omp.threads} to up to the number of hyperthreaded cores.}
+    \code{n.omp.threads} up to the number of hyperthreaded cores.}
   \item{verbose}{if \code{TRUE}, model specification and progress of the
     sampler is printed to the screen. Otherwise, nothing is printed to
     the screen.  }
@@ -39,14 +39,12 @@ n.omp.threads = 1, verbose=TRUE, n.report=100, ...)
 \value{
   A list comprising:
   \item{p.y.0}{a matrix that holds the response variable posterior
-    predictive samples where rows are location corresponding to
+    predictive samples where rows are locations corresponding to
   \code{coords.0} and columns are samples. }
   \item{p.w.0}{a matrix that holds the random effect posterior
-    predictive samples where rows are location  corresponding to
+    predictive samples where rows are locations corresponding to
   \code{coords.0} and columns are samples. This is only returned if \code{\link{spNNGP}} \code{method = "sequential".}}
 \item{run.time}{execution time reported using \code{proc.time()}.}
-  The return object will include additional data used for subsequent
-  prediction and/or model fit evaluation.
 }
 
 \references{
