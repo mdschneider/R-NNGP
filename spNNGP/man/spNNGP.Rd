@@ -80,12 +80,11 @@ be compiled for OpenMP support. For most Intel-based machines, we
   \item{p.theta.samples}{a \code{coda} object of posterior samples for
     covariance parameters. }
   \item{n.indx}{if \code{return.neighbors=TRUE} then \code{n.indx} will
-    be a list of length \eqn{n}{n}. The \eqn{i-th}{i-th} element in the
-    list corresponds to the \eqn{i-th}{i-th} row in the ordered
+    be a list of length \eqn{n}{n}. The \emph{i}-th element in the
+    list corresponds to the \emph{i}-th row in the ordered
     \code{coords} matrix and the elements are the nearest neighbor indices
-    for the given location.}
-  \item{coords}{the input \code{coords} matrix ordered by the first
-    column of that matrix. }
+    for the given location. }
+  \item{coords}{the input \code{coords} matrix ordered by the first column. }
   \item{run.time}{execution time for building the nearest neighbor index
     and MCMC sampler reported using \code{proc.time()}.}
   The return object will include additional objects used for subsequent
@@ -101,7 +100,15 @@ in the \code{starting} and \code{tuning} lists.
 }
 
 \references{
-  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016) Hierarchical Nearest-Neighbor Gaussian process models for large geostatistical datasets. Journal of the American Statistical Association, 111:800-812.
+  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016)
+  Hierarchical Nearest-Neighbor Gaussian process models for large
+  geostatistical datasets. Journal of the American Statistical
+  Association, 111:800-812
+
+  Finley, A.O., A. Datta, B.C. Cook, D.C. Morton, H.E. Andersen, and
+  S. Banerjee (2017) Applying Nearest Neighbor Gaussian Processes to
+  massive spatial data sets: Forest canopy height prediction across
+  Tanana Valley Alaska, \url{https://arxiv.org/abs/1702.00434v2}.
 }
 
 \author{
@@ -110,10 +117,7 @@ in the \code{starting} and \code{tuning} lists.
   Sudipto Banerjee \email{sudipto@ucla.edu}
 }
 
-
 \examples{
-\dontrun{
-
 rmvn <- function(n, mu=0, V = matrix(1)){
   p <- length(mu)
   if(any(is.na(match(dim(V),p))))
@@ -124,7 +128,7 @@ rmvn <- function(n, mu=0, V = matrix(1)){
 
 ##Make some data
 set.seed(1)
-n <- 2000
+n <- 500
 coords <- cbind(runif(n,0,1), runif(n,0,1))
 
 x <- cbind(1, rnorm(n))
@@ -140,20 +144,8 @@ R <- exp(-phi*D)
 w <- rmvn(1, rep(0,n), sigma.sq*R)
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
-ho <- sample(1:n, 1000)
-
-y.ho <- y[ho]
-x.ho <- x[ho,,drop=FALSE]
-w.ho <- w[ho]
-coords.ho <- coords[ho,]
-
-y <- y[-ho]
-x <- x[-ho,,drop=FALSE]
-w <- w[-ho,,drop=FALSE]
-coords <- coords[-ho,]
-
 ##Fit a Response and Sequential NNGP model
-n.samples <- 1000
+n.samples <- 500
 
 starting <- list("phi"=phi, "sigma.sq"=5, "tau.sq"=1)
 
@@ -163,25 +155,20 @@ priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 5), "tau.sq.IG"=c(2
 
 cov.model <- "exponential"
 
-n.report <- 500
-verbose <- TRUE
-
 m.s <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.neighbors=10,
               tuning=tuning, priors=priors, cov.model=cov.model,
-              n.samples=n.samples, n.omp.threads=2, verbose=verbose, n.report=n.report)
+              n.samples=n.samples, n.omp.threads=2)
 
 round(summary(m.s$p.beta.samples)$quantiles[,c(3,1,5)],2)
 round(summary(m.s$p.theta.samples)$quantiles[,c(3,1,5)],2)
 
 m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neighbors=10,
               tuning=tuning, priors=priors, cov.model=cov.model,
-              n.samples=n.samples, n.omp.threads=2, verbose=verbose, n.report=n.report)
+              n.samples=n.samples, n.omp.threads=2)
 
 round(summary(m.r$p.beta.samples)$quantiles[,c(3,1,5)],2)
 round(summary(m.r$p.theta.samples)$quantiles[,c(3,1,5)],2)
 
 }
-}
-
 
 \keyword{model}

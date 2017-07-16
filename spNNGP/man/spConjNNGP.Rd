@@ -67,12 +67,12 @@ be compiled for OpenMP support. For most Intel-based machines, we recommend sett
   \item{y.0.var.hat}{prediction variance if \code{X.0} and
     \code{coords.0} are specified.}
   \item{n.indx}{if \code{return.neighbors=TRUE} then \code{n.indx} will
-    be a list of length \eqn{n}{n}. The \eqn{i-th}{i-th} element in the
-    list corresponds to the \eqn{i-th}{i-th} row in the ordered
+    be a list of length \eqn{n}{n}. The \emph{i}-th element in the
+    list corresponds to the \emph{i}-th row in the ordered
     \code{coords} matrix and the elements are the nearest neighbor indices
     for the given location.}
   \item{coords}{the input \code{coords} matrix ordered by the first
-  column of that matrix. }
+  column. }
   \item{run.time}{execution time for building the nearest neighbor index
     and parameter estimation reported using \code{proc.time()}.}
   The return object will include additional objects used for subsequent
@@ -80,9 +80,19 @@ be compiled for OpenMP support. For most Intel-based machines, we recommend sett
 }
 
 \references{
-  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016) Hierarchical Nearest-Neighbor Gaussian process models for large geostatistical datasets. Journal of the American Statistical Association, 111:800-812.
+  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016)
+  Hierarchical Nearest-Neighbor Gaussian process models for large
+  geostatistical datasets. Journal of the American Statistical
+  Association, 111:800-812.
 
-  Gneiting, T and A.E. Raftery. (2007) Strictly proper scoring rules, prediction, and estimation. Journal of the American Statistical Association, 102:359-378.
+  Finley, A.O., A. Datta, B.C. Cook, D.C. Morton, H.E. Andersen, and
+  S. Banerjee (2017) Applying Nearest Neighbor Gaussian Processes to
+  massive spatial data sets: Forest canopy height prediction across
+  Tanana Valley Alaska, \url{https://arxiv.org/abs/1702.00434v2}.
+  
+  Gneiting, T and A.E. Raftery. (2007) Strictly proper scoring rules,
+  prediction, and estimation. Journal of the American Statistical
+  Association, 102:359-378.
 }
 
 \author{
@@ -92,7 +102,6 @@ be compiled for OpenMP support. For most Intel-based machines, we recommend sett
 }
 
 \examples{
-\dontrun{
 rmvn <- function(n, mu=0, V = matrix(1)){
   p <- length(mu)
   if(any(is.na(match(dim(V),p))))
@@ -141,6 +150,18 @@ theta.alpha <- cbind(seq(phi,30,length.out=g), seq(tau.sq/sigma.sq,5,length.out=
 
 colnames(theta.alpha) <- c("phi", "alpha")
 
+##one thread
+m.c <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
+                  X.0 = x.ho, coords.0 = coords.ho,
+                  k.fold = 5, score.rule = "crps",
+                  n.omp.threads = 1,
+                  theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model)
+
+m.c$beta.hat
+m.c$theta.alpha.sigmaSq
+m.c$k.fold.scores
+
+##two threads
 m.c <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
                   X.0 = x.ho, coords.0 = coords.ho,
                   k.fold = 5, score.rule = "crps",
@@ -151,8 +172,6 @@ m.c$beta.hat
 m.c$theta.alpha.sigmaSq
 m.c$k.fold.scores
 
-plot(m.c$y.0.hat, y.ho)
-}
 }
 
 

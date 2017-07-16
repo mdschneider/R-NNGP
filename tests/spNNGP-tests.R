@@ -64,7 +64,7 @@ m.s.t <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.
                 tuning=tuning, priors=priors, cov.model=cov.model,
                 n.samples=n.samples, search.type="tree", return.neighbors = TRUE, n.omp.threads=2, verbose=verbose, n.report=n.report)
 
-max(m.s.b$n.indx - m.s.t$n.indx)
+identical(m.s.b$n.indx,m.s.t$n.indx)
 
 ##response
 set.seed(1)
@@ -77,7 +77,7 @@ m.r.t <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.ne
                 tuning=tuning, priors=priors, cov.model=cov.model,
                 n.samples=n.samples, search.type="tree", n.omp.threads=2, verbose=verbose, n.report=n.report)
 
-max(m.s.b$n.indx - m.s.t$n.indx)
+identical(m.s.b$n.indx,m.s.t$n.indx)
 
 ##conj
 sigma.sq.IG <- c(2, sigma.sq)
@@ -101,7 +101,7 @@ m.c.t <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 15,
                     n.omp.threads = 2, return.neighbors = TRUE, 
                     theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model, search.type="tree")
 
-max(m.c.b$n.indx - m.c.t$n.indx)
+identical(m.c.b$n.indx, m.c.t$n.indx)
 
 m.c.b$beta.hat
 m.c.b$theta.alpha.sigmaSq
@@ -111,47 +111,12 @@ m.c.t$beta.hat
 m.c.t$theta.alpha.sigmaSq
 m.c.t$k.fold.scores
 
-##n.list
-
-n.indx <- m.c.t$n.indx
-
-n <- length(m.c.t$y)
-n.neighbors <- m.c.t$n.neighbors
-ord <- m.c.t$ord
-n.indx.mtrx <- list()
-
-
-get.n.indx <- function(i, m){
-    i <- i-1
-    if(i == 0){
-        return(NA)
-    }else if(i < m){
-        n.indx.i <- i/2*(i-1)
-        m.i <- i
-        return((n.indx.i+1):((n.indx.i+1)+i-1))
-    }else{
-        n.indx.i <- m/2*(m-1)+(i-m)*m
-        m.i <- m
-        return((n.indx.i+1):((n.indx.i+1)+m-1))
-    }
-}
-
-mk.n.indx.list <- function(n.indx, n, m){
-    n.indx.list <- vector("list", n)
-    n.indx.list[1] <- NA
-    for(i in 2:n){
-        n.indx.list[[i]] <- n.indx[get.n.indx(i, n.neighbors)]+1
-    }
-    n.indx.list
-}
-
-a <- mk.n.indx.list(n.indx, n, m, ord)
-
+##n.indx
 ord.coords <- m.c.t$coords
 
 for(i in 1:n){
     plot(ord.coords)
     points(ord.coords[i,,drop=FALSE], pch=19)
-    points(ord.coords[a[[i]],,drop=FALSE],pch=19, col="blue")
+    points(ord.coords[m.c.t$n.indx[[i]],,drop=FALSE],pch=19, col="blue")
     readline(prompt = "Pause. Press <Enter> to continue...")
 }

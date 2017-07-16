@@ -8,8 +8,8 @@
 }
 
 \usage{
-spPredict(sp.obj, X.0, coords.0, start=1, end, thin=1,
-n.omp.threads = 1, verbose=TRUE, n.report=100, ...)
+spPredict(sp.obj, X.0, coords.0, start=1, end, thin=1, n.omp.threads = 1,
+          verbose=TRUE, n.report=100, ...)
 }
 
 \arguments{
@@ -48,7 +48,15 @@ n.omp.threads = 1, verbose=TRUE, n.report=100, ...)
 }
 
 \references{
-  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016) Hierarchical Nearest-Neighbor Gaussian process models for large geostatistical datasets. Journal of the American Statistical Association, 111:800-812.
+  Datta, A., S. Banerjee, A.O. Finley, and A.E. Gelfand. (2016)
+  Hierarchical Nearest-Neighbor Gaussian process models for large
+  geostatistical datasets. Journal of the American Statistical
+  Association, 111:800-812.
+  
+  Finley, A.O., A. Datta, B.C. Cook, D.C. Morton, H.E. Andersen, and
+  S. Banerjee (2017) Applying Nearest Neighbor Gaussian Processes to
+  massive spatial data sets: Forest canopy height prediction across
+  Tanana Valley Alaska, \url{https://arxiv.org/abs/1702.00434v2}.
 }
 
 \author{
@@ -58,7 +66,6 @@ n.omp.threads = 1, verbose=TRUE, n.report=100, ...)
 }
 
 \examples{
-\dontrun{
 
 rmvn <- function(n, mu=0, V = matrix(1)){
   p <- length(mu)
@@ -70,7 +77,7 @@ rmvn <- function(n, mu=0, V = matrix(1)){
 
 ##Make some data
 set.seed(1)
-n <- 2000
+n <- 500
 coords <- cbind(runif(n,0,1), runif(n,0,1))
 
 x <- cbind(1, rnorm(n))
@@ -86,7 +93,7 @@ R <- exp(-phi*D)
 w <- rmvn(1, rep(0,n), sigma.sq*R)
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
-ho <- sample(1:n, 1000)
+ho <- sample(1:n, 250)
 
 y.ho <- y[ho]
 x.ho <- x[ho,,drop=FALSE]
@@ -99,7 +106,7 @@ w <- w[-ho,,drop=FALSE]
 coords <- coords[-ho,]
 
 ##Fit a Response and Sequential NNGP model
-n.samples <- 1000
+n.samples <- 500
 
 starting <- list("phi"=phi, "sigma.sq"=5, "tau.sq"=1)
 
@@ -110,32 +117,26 @@ priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 5), "tau.sq.IG"=c(2
 cov.model <- "exponential"
 
 n.report <- 500
-verbose <- TRUE
 
+##Predict for holdout set using both models
 m.s <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.neighbors=10,
               tuning=tuning, priors=priors, cov.model=cov.model,
-              n.samples=n.samples, n.omp.threads=2, verbose=verbose, n.report=n.report)
-
-round(summary(m.s$p.beta.samples)$quantiles[,c(3,1,5)],2)
-round(summary(m.s$p.theta.samples)$quantiles[,c(3,1,5)],2)
+              n.samples=n.samples, n.omp.threads=2, n.report=n.report)
 
 m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neighbors=10,
               tuning=tuning, priors=priors, cov.model=cov.model,
-              n.samples=n.samples, n.omp.threads=2, verbose=verbose, n.report=n.report)
-
-round(summary(m.r$p.beta.samples)$quantiles[,c(3,1,5)],2)
-round(summary(m.r$p.theta.samples)$quantiles[,c(3,1,5)],2)
+              n.samples=n.samples, n.omp.threads=2, n.report=n.report)
 
 ##Prediction for holdout data
 p.s <- spPredict(m.s, X.0 = x.ho, coords.0 = coords.ho, n.omp.threads=2)
 
-plot(apply(p.s$p.y.0, 1, mean), y.ho)
 plot(apply(p.s$p.w.0, 1, mean), w.ho)
+plot(apply(p.s$p.y.0, 1, mean), y.ho)
 
 p.r <- spPredict(m.r, X.0 = x.ho, coords.0 = coords.ho, n.omp.threads=2)
 
 plot(apply(p.r$p.y.0, 1, mean), y.ho)
-}
+
 }
 
 \keyword{model}

@@ -245,7 +245,7 @@ extern "C" {
     PROTECT(wSamples_r = allocMatrix(REALSXP, n, nSamples)); nProtect++;
     
     //other stuff
-    double logPostCand, logPostCurrent, logDet, QCurrent, QCand, accept = 0, batchAccept = 0, status = 0;
+    double logPostCand, logPostCurrent, logDet, accept = 0, batchAccept = 0, status = 0;
     int jj, kk, pp = p*p;
     double *tmp_pp = (double *) R_alloc(pp, sizeof(double));
     double *tmp_p = (double *) R_alloc(p, sizeof(double));

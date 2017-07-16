@@ -91,7 +91,6 @@ extern "C" {
     }
 
     //get max nu
-    double *bk = NULL;
     double nuMax = 0;
     int nb = 0;
     
@@ -102,9 +101,10 @@ extern "C" {
 	}
       }
 
-      nb = static_cast<int>(floor(nuMax));
-      bk = (double *) R_alloc(nThreads*1.0+nb, sizeof(double));
+      nb = 1+static_cast<int>(floor(nuMax));
     }
+
+    double *bk = (double *) R_alloc(nThreads*nb, sizeof(double));
     
     double *C = (double *) R_alloc(nThreads*mm, sizeof(double)); zeros(C, nThreads*mm);
     double *c = (double *) R_alloc(nThreads*m, sizeof(double)); zeros(c, nThreads*m);
@@ -137,7 +137,7 @@ extern "C" {
 
     for(i = 0; i < q; i++){
 #ifdef _OPENMP
-#pragma omp parallel for private(threadID, phi, nu, sigmaSq, tauSq, k, l, d) reduction(+:zIndx)
+#pragma omp parallel for private(threadID, phi, nu, sigmaSq, tauSq, k, l, d, info) reduction(+:zIndx)
 #endif     
       for(s = 0; s < nSamples; s++){
 #ifdef _OPENMP

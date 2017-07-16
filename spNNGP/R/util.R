@@ -27,7 +27,7 @@ mk.n.indx.list <- function(n.indx, n, m){
     n.indx.list <- vector("list", n)
     n.indx.list[1] <- NA
     for(i in 2:n){
-        n.indx.list[[i]] <- n.indx[get.n.indx(i, n.neighbors)]+1
+        n.indx.list[[i]] <- n.indx[get.n.indx(i, m)]+1
     }
     n.indx.list
 }
