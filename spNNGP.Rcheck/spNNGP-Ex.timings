@@ -1,4 +1,4 @@
 name	user	system	elapsed
-spConjNNGP	0.000	0.000	0.001	
-spNNGP	0.000	0.000	0.001	
-spPredict	0.004	0.000	0.001	
+spConjNNGP	2.904	0.028	2.768	
+spNNGP	1.088	0.000	0.599	
+spPredict	0.880	0.000	0.456	

@@ -4,12 +4,12 @@
 * using session charset: UTF-8
 * using option ‘--as-cran’
 * checking for file ‘spNNGP/DESCRIPTION’ ... OK
-* this is package ‘spNNGP’ version ‘0.1.0’
+* this is package ‘spNNGP’ version ‘0.1.1’
 * package encoding: UTF-8
 * checking CRAN incoming feasibility ... NOTE
 Maintainer: ‘Andrew Finley <finleya@msu.edu>’
 
-New submission
+Days since last update: 1
 * checking package namespace information ... OK
 * checking package dependencies ... OK
 * checking if this is a source package ... OK

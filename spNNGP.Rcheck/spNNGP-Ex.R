@@ -31,77 +31,77 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 
 ### ** Examples
 
-## Not run: 
-##D rmvn <- function(n, mu=0, V = matrix(1)){
-##D   p <- length(mu)
-##D   if(any(is.na(match(dim(V),p))))
-##D     stop("Dimension problem!")
-##D   D <- chol(V)
-##D   t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
-##D }
-##D 
-##D ##Make some data
-##D set.seed(1)
-##D n <- 2000
-##D coords <- cbind(runif(n,0,1), runif(n,0,1))
-##D 
-##D x <- cbind(1, rnorm(n))
-##D 
-##D B <- as.matrix(c(1,5))
-##D 
-##D sigma.sq <- 5
-##D tau.sq <- 1
-##D phi <- 3/0.5
-##D 
-##D D <- as.matrix(dist(coords))
-##D R <- exp(-phi*D)
-##D w <- rmvn(1, rep(0,n), sigma.sq*R)
-##D y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
-##D 
-##D ho <- sample(1:n, 1000)
-##D 
-##D y.ho <- y[ho]
-##D x.ho <- x[ho,,drop=FALSE]
-##D w.ho <- w[ho]
-##D coords.ho <- coords[ho,]
-##D 
-##D y <- y[-ho]
-##D x <- x[-ho,,drop=FALSE]
-##D w <- w[-ho,,drop=FALSE]
-##D coords <- coords[-ho,]
-##D 
-##D ##Fit a Conjugate NNGP model and predict for the holdout
-##D sigma.sq.IG <- c(2, sigma.sq)
-##D 
-##D cov.model <- "exponential"
-##D 
-##D g <- 10
-##D theta.alpha <- cbind(seq(phi,30,length.out=g), seq(tau.sq/sigma.sq,5,length.out=g))
-##D 
-##D colnames(theta.alpha) <- c("phi", "alpha")
-##D 
-##D ##one thread
-##D m.c <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
-##D                   X.0 = x.ho, coords.0 = coords.ho,
-##D                   k.fold = 5, score.rule = "crps",
-##D                   n.omp.threads = 1,
-##D                   theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model)
-##D 
-##D m.c$beta.hat
-##D m.c$theta.alpha.sigmaSq
-##D m.c$k.fold.scores
-##D 
-##D ##two threads
-##D m.c <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
-##D                   X.0 = x.ho, coords.0 = coords.ho,
-##D                   k.fold = 5, score.rule = "crps",
-##D                   n.omp.threads = 2,
-##D                   theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model)
-##D 
-##D m.c$beta.hat
-##D m.c$theta.alpha.sigmaSq
-##D m.c$k.fold.scores
-## End(Not run)
+
+rmvn <- function(n, mu=0, V = matrix(1)){
+  p <- length(mu)
+  if(any(is.na(match(dim(V),p))))
+    stop("Dimension problem!")
+  D <- chol(V)
+  t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
+}
+
+##Make some data
+set.seed(1)
+n <- 2000
+coords <- cbind(runif(n,0,1), runif(n,0,1))
+
+x <- cbind(1, rnorm(n))
+
+B <- as.matrix(c(1,5))
+
+sigma.sq <- 5
+tau.sq <- 1
+phi <- 3/0.5
+
+D <- as.matrix(dist(coords))
+R <- exp(-phi*D)
+w <- rmvn(1, rep(0,n), sigma.sq*R)
+y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
+
+ho <- sample(1:n, 1000)
+
+y.ho <- y[ho]
+x.ho <- x[ho,,drop=FALSE]
+w.ho <- w[ho]
+coords.ho <- coords[ho,]
+
+y <- y[-ho]
+x <- x[-ho,,drop=FALSE]
+w <- w[-ho,,drop=FALSE]
+coords <- coords[-ho,]
+
+##Fit a Conjugate NNGP model and predict for the holdout
+sigma.sq.IG <- c(2, sigma.sq)
+
+cov.model <- "exponential"
+
+g <- 10
+theta.alpha <- cbind(seq(phi,30,length.out=g), seq(tau.sq/sigma.sq,5,length.out=g))
+
+colnames(theta.alpha) <- c("phi", "alpha")
+
+##one thread
+m.c <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
+                  X.0 = x.ho, coords.0 = coords.ho,
+                  k.fold = 5, score.rule = "crps",
+                  n.omp.threads = 1,
+                  theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model)
+
+m.c$beta.hat
+m.c$theta.alpha.sigmaSq
+m.c$k.fold.scores
+
+##two threads
+m.c <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
+                  X.0 = x.ho, coords.0 = coords.ho,
+                  k.fold = 5, score.rule = "crps",
+                  n.omp.threads = 2,
+                  theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model)
+
+m.c$beta.hat
+m.c$theta.alpha.sigmaSq
+m.c$k.fold.scores
+
 
 
 
@@ -122,58 +122,58 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 
 ### ** Examples
 
-## Not run: 
-##D rmvn <- function(n, mu=0, V = matrix(1)){
-##D   p <- length(mu)
-##D   if(any(is.na(match(dim(V),p))))
-##D     stop("Dimension problem!")
-##D   D <- chol(V)
-##D   t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
-##D }
-##D 
-##D ##Make some data
-##D set.seed(1)
-##D n <- 1000
-##D coords <- cbind(runif(n,0,1), runif(n,0,1))
-##D 
-##D x <- cbind(1, rnorm(n))
-##D 
-##D B <- as.matrix(c(1,5))
-##D 
-##D sigma.sq <- 5
-##D tau.sq <- 1
-##D phi <- 3/0.5
-##D 
-##D D <- as.matrix(dist(coords))
-##D R <- exp(-phi*D)
-##D w <- rmvn(1, rep(0,n), sigma.sq*R)
-##D y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
-##D 
-##D ##Fit a Response and Sequential NNGP model
-##D n.samples <- 500
-##D 
-##D starting <- list("phi"=phi, "sigma.sq"=5, "tau.sq"=1)
-##D 
-##D tuning <- list("phi"=0.1, "sigma.sq"=0.1, "tau.sq"=0.1)
-##D 
-##D priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 5), "tau.sq.IG"=c(2, 1))
-##D 
-##D cov.model <- "exponential"
-##D 
-##D m.s <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.neighbors=10,
-##D               tuning=tuning, priors=priors, cov.model=cov.model,
-##D               n.samples=n.samples, n.omp.threads=2)
-##D 
-##D round(summary(m.s$p.beta.samples)$quantiles[,c(3,1,5)],2)
-##D round(summary(m.s$p.theta.samples)$quantiles[,c(3,1,5)],2)
-##D 
-##D m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neighbors=10,
-##D               tuning=tuning, priors=priors, cov.model=cov.model,
-##D               n.samples=n.samples, n.omp.threads=2)
-##D 
-##D round(summary(m.r$p.beta.samples)$quantiles[,c(3,1,5)],2)
-##D round(summary(m.r$p.theta.samples)$quantiles[,c(3,1,5)],2)
-## End(Not run)
+
+rmvn <- function(n, mu=0, V = matrix(1)){
+  p <- length(mu)
+  if(any(is.na(match(dim(V),p))))
+    stop("Dimension problem!")
+  D <- chol(V)
+  t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
+}
+
+##Make some data
+set.seed(1)
+n <- 100
+coords <- cbind(runif(n,0,1), runif(n,0,1))
+
+x <- cbind(1, rnorm(n))
+
+B <- as.matrix(c(1,5))
+
+sigma.sq <- 5
+tau.sq <- 1
+phi <- 3/0.5
+
+D <- as.matrix(dist(coords))
+R <- exp(-phi*D)
+w <- rmvn(1, rep(0,n), sigma.sq*R)
+y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
+
+##Fit a Response and Sequential NNGP model
+n.samples <- 500
+
+starting <- list("phi"=phi, "sigma.sq"=5, "tau.sq"=1)
+
+tuning <- list("phi"=0.1, "sigma.sq"=0.1, "tau.sq"=0.1)
+
+priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 5), "tau.sq.IG"=c(2, 1))
+
+cov.model <- "exponential"
+
+m.s <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.neighbors=10,
+              tuning=tuning, priors=priors, cov.model=cov.model,
+              n.samples=n.samples, n.omp.threads=2)
+
+round(summary(m.s$p.beta.samples)$quantiles[,c(3,1,5)],2)
+round(summary(m.s$p.theta.samples)$quantiles[,c(3,1,5)],2)
+
+m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neighbors=10,
+              tuning=tuning, priors=priors, cov.model=cov.model,
+              n.samples=n.samples, n.omp.threads=2)
+
+round(summary(m.r$p.beta.samples)$quantiles[,c(3,1,5)],2)
+round(summary(m.r$p.theta.samples)$quantiles[,c(3,1,5)],2)
+
 
 
 
@@ -193,77 +193,77 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 
 ### ** Examples
 
-## Not run: 
-##D rmvn <- function(n, mu=0, V = matrix(1)){
-##D   p <- length(mu)
-##D   if(any(is.na(match(dim(V),p))))
-##D     stop("Dimension problem!")
-##D   D <- chol(V)
-##D   t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
-##D }
-##D 
-##D ##Make some data
-##D set.seed(1)
-##D n <- 1000
-##D coords <- cbind(runif(n,0,1), runif(n,0,1))
-##D 
-##D x <- cbind(1, rnorm(n))
-##D 
-##D B <- as.matrix(c(1,5))
-##D 
-##D sigma.sq <- 5
-##D tau.sq <- 1
-##D phi <- 3/0.5
-##D 
-##D D <- as.matrix(dist(coords))
-##D R <- exp(-phi*D)
-##D w <- rmvn(1, rep(0,n), sigma.sq*R)
-##D y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
-##D 
-##D ho <- sample(1:n, 500)
-##D 
-##D y.ho <- y[ho]
-##D x.ho <- x[ho,,drop=FALSE]
-##D w.ho <- w[ho]
-##D coords.ho <- coords[ho,]
-##D 
-##D y <- y[-ho]
-##D x <- x[-ho,,drop=FALSE]
-##D w <- w[-ho,,drop=FALSE]
-##D coords <- coords[-ho,]
-##D 
-##D ##Fit a Response and Sequential NNGP model
-##D n.samples <- 500
-##D 
-##D starting <- list("phi"=phi, "sigma.sq"=5, "tau.sq"=1)
-##D 
-##D tuning <- list("phi"=0.1, "sigma.sq"=0.1, "tau.sq"=0.1)
-##D 
-##D priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 5), "tau.sq.IG"=c(2, 1))
-##D 
-##D cov.model <- "exponential"
-##D 
-##D n.report <- 500
-##D 
-##D ##Predict for holdout set using both models
-##D m.s <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.neighbors=10,
-##D               tuning=tuning, priors=priors, cov.model=cov.model,
-##D               n.samples=n.samples, n.omp.threads=2, n.report=n.report)
-##D 
-##D m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neighbors=10,
-##D               tuning=tuning, priors=priors, cov.model=cov.model,
-##D               n.samples=n.samples, n.omp.threads=2, n.report=n.report)
-##D 
-##D ##Prediction for holdout data
-##D p.s <- spPredict(m.s, X.0 = x.ho, coords.0 = coords.ho, n.omp.threads=2)
-##D 
-##D plot(apply(p.s$p.w.0, 1, mean), w.ho)
-##D plot(apply(p.s$p.y.0, 1, mean), y.ho)
-##D 
-##D p.r <- spPredict(m.r, X.0 = x.ho, coords.0 = coords.ho, n.omp.threads=2)
-##D 
-##D plot(apply(p.r$p.y.0, 1, mean), y.ho)
-## End(Not run)
+
+rmvn <- function(n, mu=0, V = matrix(1)){
+  p <- length(mu)
+  if(any(is.na(match(dim(V),p))))
+    stop("Dimension problem!")
+  D <- chol(V)
+  t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
+}
+
+##Make some data
+set.seed(1)
+n <- 100
+coords <- cbind(runif(n,0,1), runif(n,0,1))
+
+x <- cbind(1, rnorm(n))
+
+B <- as.matrix(c(1,5))
+
+sigma.sq <- 5
+tau.sq <- 1
+phi <- 3/0.5
+
+D <- as.matrix(dist(coords))
+R <- exp(-phi*D)
+w <- rmvn(1, rep(0,n), sigma.sq*R)
+y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
+
+ho <- sample(1:n, 50)
+
+y.ho <- y[ho]
+x.ho <- x[ho,,drop=FALSE]
+w.ho <- w[ho]
+coords.ho <- coords[ho,]
+
+y <- y[-ho]
+x <- x[-ho,,drop=FALSE]
+w <- w[-ho,,drop=FALSE]
+coords <- coords[-ho,]
+
+##Fit a Response and Sequential NNGP model
+n.samples <- 500
+
+starting <- list("phi"=phi, "sigma.sq"=5, "tau.sq"=1)
+
+tuning <- list("phi"=0.1, "sigma.sq"=0.1, "tau.sq"=0.1)
+
+priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 5), "tau.sq.IG"=c(2, 1))
+
+cov.model <- "exponential"
+
+n.report <- 500
+
+##Predict for holdout set using both models
+m.s <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.neighbors=10,
+              tuning=tuning, priors=priors, cov.model=cov.model,
+              n.samples=n.samples, n.omp.threads=2, n.report=n.report)
+
+m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neighbors=10,
+              tuning=tuning, priors=priors, cov.model=cov.model,
+              n.samples=n.samples, n.omp.threads=2, n.report=n.report)
+
+##Prediction for holdout data
+p.s <- spPredict(m.s, X.0 = x.ho, coords.0 = coords.ho, n.omp.threads=2)
+
+plot(apply(p.s$p.w.0, 1, mean), w.ho)
+plot(apply(p.s$p.y.0, 1, mean), y.ho)
+
+p.r <- spPredict(m.r, X.0 = x.ho, coords.0 = coords.ho, n.omp.threads=2)
+
+plot(apply(p.r$p.y.0, 1, mean), y.ho)
+
 
 
 

@@ -118,7 +118,7 @@ in the \code{starting} and \code{tuning} lists.
 }
 
 \examples{
-\dontrun{
+
 rmvn <- function(n, mu=0, V = matrix(1)){
   p <- length(mu)
   if(any(is.na(match(dim(V),p))))
@@ -129,7 +129,7 @@ rmvn <- function(n, mu=0, V = matrix(1)){
 
 ##Make some data
 set.seed(1)
-n <- 1000
+n <- 100
 coords <- cbind(runif(n,0,1), runif(n,0,1))
 
 x <- cbind(1, rnorm(n))
@@ -169,7 +169,7 @@ m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neig
 
 round(summary(m.r$p.beta.samples)$quantiles[,c(3,1,5)],2)
 round(summary(m.r$p.theta.samples)$quantiles[,c(3,1,5)],2)
-}
+
 }
 
 \keyword{model}

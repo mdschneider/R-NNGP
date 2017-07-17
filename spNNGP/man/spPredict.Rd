@@ -66,7 +66,7 @@ spPredict(sp.obj, X.0, coords.0, start=1, end, thin=1, n.omp.threads = 1,
 }
 
 \examples{
-\dontrun{
+
 rmvn <- function(n, mu=0, V = matrix(1)){
   p <- length(mu)
   if(any(is.na(match(dim(V),p))))
@@ -77,7 +77,7 @@ rmvn <- function(n, mu=0, V = matrix(1)){
 
 ##Make some data
 set.seed(1)
-n <- 1000
+n <- 100
 coords <- cbind(runif(n,0,1), runif(n,0,1))
 
 x <- cbind(1, rnorm(n))
@@ -93,7 +93,7 @@ R <- exp(-phi*D)
 w <- rmvn(1, rep(0,n), sigma.sq*R)
 y <- rnorm(n, x\%*\%B + w, sqrt(tau.sq))
 
-ho <- sample(1:n, 500)
+ho <- sample(1:n, 50)
 
 y.ho <- y[ho]
 x.ho <- x[ho,,drop=FALSE]
@@ -136,7 +136,7 @@ plot(apply(p.s$p.y.0, 1, mean), y.ho)
 p.r <- spPredict(m.r, X.0 = x.ho, coords.0 = coords.ho, n.omp.threads=2)
 
 plot(apply(p.r$p.y.0, 1, mean), y.ho)
-}
+
 }
 
 \keyword{model}

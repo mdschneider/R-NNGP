@@ -1,7 +1,7 @@
 Package: spNNGP
 Title: Spatial Regression Models using Nearest Neighbor Gaussian
         Processes
-Version: 0.1.0
+Version: 0.1.1
 Date: 2017-07-14
 Authors@R: c(person("Andrew", "Finley", role=c("aut", "cre"), email="finleya@msu.edu"), person("Abhirup", "Datta", role="aut", email="abhidatta@jhu.edu"), person("Sudipto", "Banerjee", role="aut", email="sudipto@ucla.edu"), person("Alexander", "Mckim", role="ctb", email="amckim@g.clemson.edu"))
 Maintainer: Andrew Finley <finleya@msu.edu>
@@ -16,5 +16,5 @@ Encoding: UTF-8
 URL: http://blue.for.msu.edu/software.html
 Repository: CRAN
 NeedsCompilation: yes
-Packaged: 2017-07-16 11:46:30 UTC; andy
-Built: R 3.5.0; x86_64-pc-linux-gnu; 2017-07-16 11:47:10 UTC; unix
+Packaged: 2017-07-17 17:07:45 UTC; andy
+Built: R 3.5.0; x86_64-pc-linux-gnu; 2017-07-17 17:08:38 UTC; unix

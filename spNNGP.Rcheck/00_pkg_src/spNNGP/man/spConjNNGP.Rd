@@ -102,7 +102,7 @@ be compiled for OpenMP support. For most Intel-based machines, we recommend sett
 }
 
 \examples{
-\dontrun{
+
 rmvn <- function(n, mu=0, V = matrix(1)){
   p <- length(mu)
   if(any(is.na(match(dim(V),p))))
@@ -172,7 +172,7 @@ m.c <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
 m.c$beta.hat
 m.c$theta.alpha.sigmaSq
 m.c$k.fold.scores
-}
+
 }
 
 
