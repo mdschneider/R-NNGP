@@ -5,6 +5,7 @@
 #include <Rinternals.h>
 #include <R_ext/BLAS.h>
 #include <R_ext/Utils.h>
+#include "util.h"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -154,6 +155,7 @@ double spCor(double &D, double &phi, double &nu, int &covModel, double *bk){
     
     if(D*phi > 0.0){
       return pow(D*phi, nu)/(pow(2, nu-1)*gammafn(nu))*bessel_k_ex(D*phi, nu, 1.0, bk);//thread safe bessel
+      //return pow(D*phi, nu)/(pow(2, nu-1)*gammafn(nu))*bessel_k(D*phi, nu, 1.0);
     }else{
       return 1.0;
     } 
@@ -199,4 +201,161 @@ double Q(double *B, double *F, double *u, double *v, int n, int *nnIndx, int *nn
   }
   
   return(q);
+}
+
+//trees
+Node *miniInsert(Node *Tree, double *coords, int index, int d,int n){
+
+  int P = 2;
+  
+  if(Tree==NULL){
+    return new Node(index);
+  }
+  
+  if(coords[index]<=coords[Tree->index]&&d==0){
+    Tree->left=miniInsert(Tree->left,coords,index,(d+1)%P,n);
+  }
+  
+  if(coords[index]>coords[Tree->index]&&d==0){ 
+    Tree->right=miniInsert(Tree->right,coords,index,(d+1)%P,n);
+  }
+  
+  if(coords[index+n]<=coords[Tree->index+n]&&d==1){
+    Tree->left=miniInsert(Tree->left,coords,index,(d+1)%P,n);
+  }
+  
+  if(coords[index+n]>coords[Tree->index+n]&&d==1){ 
+    Tree->right=miniInsert(Tree->right,coords,index,(d+1)%P,n);
+  }
+  
+  return Tree;
+}
+
+void get_nn(Node *Tree, int index, int d, double *coords, int n, double *nnDist, int *nnIndx, int iNNIndx, int iNN, int check){
+
+  int P = 2;
+  
+  if(Tree==NULL){
+    return;
+  }
+  
+  double disttemp= dist2(coords[index],coords[index+n],coords[Tree->index],coords[Tree->index+n]); 
+  
+  if(index!=Tree->index && disttemp<nnDist[iNNIndx+iNN-1]){
+    nnDist[iNNIndx+iNN-1]=disttemp;
+    nnIndx[iNNIndx+iNN-1]=Tree->index;
+    //fSort(&nnDist[iNNIndx], &nnIndx[iNNIndx], iNN);
+    rsort_with_index(&nnDist[iNNIndx], &nnIndx[iNNIndx], iNN);
+  }
+  
+  Node *temp1=Tree->left;
+  Node *temp2=Tree->right;
+  
+  if(d==0){
+    
+    if(coords[index]>coords[Tree->index]){
+      std::swap(temp1,temp2);
+    }
+    
+    get_nn(temp1,index,(d+1)%P,coords,n, nnDist, nnIndx, iNNIndx, iNN, check);
+    
+    if(fabs(coords[Tree->index]-coords[index])>nnDist[iNNIndx+iNN-1]){
+      return;
+    }
+    
+    get_nn(temp2,index,(d+1)%P,coords,n, nnDist, nnIndx, iNNIndx, iNN, check);
+  }
+  
+  if(d==1){
+    
+    if(coords[index+n]>coords[Tree->index+n]){
+      std::swap(temp1,temp2);
+    }
+    
+    get_nn(temp1,index,(d+1)%P,coords,n, nnDist, nnIndx, iNNIndx, iNN,check);
+
+    if(fabs(coords[Tree->index+n]-coords[index+n])>nnDist[iNNIndx+iNN-1]){
+      return;
+    }
+    
+    get_nn(temp2,index,(d+1)%P,coords,n, nnDist, nnIndx, iNNIndx, iNN,check);
+  }
+
+}
+
+
+void mkNNIndxTree0(int n, int m, double *coords, int *nnIndx, double *nnDist, int *nnIndxLU){
+  
+  int i, iNNIndx, iNN;
+  double d;
+  int nIndx = static_cast<int>(static_cast<double>(1+m)/2*m+(n-m-1)*m);
+  int BUCKETSIZE = 10;
+
+  
+  for(i = 0; i < nIndx; i++){
+    nnDist[i] = std::numeric_limits<double>::infinity();
+  }
+  
+  Node *Tree=NULL;
+  int time_through=-1;
+  
+  for(i=0;i<n;i++){
+    getNNIndx(i, m, iNNIndx, iNN);
+    nnIndxLU[i] = iNNIndx;
+    nnIndxLU[n+i] = iNN;
+    if(time_through==-1){
+      time_through=i;
+    }
+    
+    if(i!=0){
+      for(int j = time_through; j < i; j++){ 
+	getNNIndx(i, m, iNNIndx, iNN);
+	d = dist2(coords[i], coords[i+n], coords[j], coords[n+j]);
+	if(d < nnDist[iNNIndx+iNN-1]){
+	  nnDist[iNNIndx+iNN-1] = d;
+	  nnIndx[iNNIndx+iNN-1] = j;
+	  
+	  //fSort(&nnDist[iNNIndx], &nnIndx[iNNIndx], iNN);
+	  rsort_with_index(&nnDist[iNNIndx], &nnIndx[iNNIndx], iNN);
+	}
+      }
+      
+      
+      if(i%BUCKETSIZE==0){
+
+#ifdef _OPENMP	
+#pragma omp parallel for private(iNNIndx, iNN)
+#endif  
+	for(int j=time_through;j<time_through+BUCKETSIZE;j++){
+	  
+	  getNNIndx(j, m, iNNIndx, iNN);
+	  get_nn(Tree,j,0, coords,n, nnDist,nnIndx,iNNIndx,iNN,i-BUCKETSIZE);
+	}
+	
+	
+	for(int j=time_through;j<time_through+BUCKETSIZE;j++){
+	  Tree=miniInsert(Tree,coords,j,0, n);
+	}
+	
+	time_through=-1;
+      }
+      if(i==n-1){
+	
+#ifdef _OPENMP
+#pragma omp parallel for private(iNNIndx, iNN)
+#endif  
+	for(int j=time_through;j<n;j++){
+	  getNNIndx(j, m, iNNIndx, iNN);
+	  get_nn(Tree,j,0, coords,n, nnDist,nnIndx,iNNIndx,iNN,i-BUCKETSIZE);
+	}
+	
+      }
+    } 
+    if(i==0){
+      Tree=miniInsert(Tree,coords,i,0,n);
+      time_through=-1;
+    }
+  }
+
+  delete Tree;
 }

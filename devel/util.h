@@ -62,3 +62,17 @@ double spCor(double &D, double &phi, double &nu, int &covModel, double *bk);
 int which(int a, int *b, int n);
 
 double Q(double *B, double *F, double *u, double *v, int n, int *nnIndx, int *nnIndxLU);
+
+//trees
+struct Node{
+	int index; // which point I am
+	Node *left;
+	Node *right; 
+	Node (int i) { index = i; left = right = NULL; }
+};
+
+Node *miniInsert(Node *Tree, double *coords, int index, int d,int n);
+
+void get_nn(Node *Tree, int index, int d, double *coords, int n, double *nnDist, int *nnIndx, int iNNIndx, int iNN, int check);
+
+void mkNNIndxTree0(int n, int m, double *coords, int *nnIndx, double *nnDist, int *nnIndxLU);
