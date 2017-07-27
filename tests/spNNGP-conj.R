@@ -75,9 +75,9 @@ cov.model <- "exponential"
 n.report <- 10
 
 ##Predict for holdout set using both models
-m.s <- spNNGP(y.mod~x.mod, coords=coords.mod, starting=starting, method="sequential", n.neighbors=5,
-              tuning=tuning, priors=priors, cov.model=cov.model,
-              n.samples=n.samples, n.omp.threads=2, n.report=n.report)
+## m.s <- spNNGP(y.mod~x.mod, coords=coords.mod, starting=starting, method="sequential", n.neighbors=5,
+##               tuning=tuning, priors=priors, cov.model=cov.model,
+##               n.samples=n.samples, n.omp.threads=2, n.report=n.report)
 
 m.r <- spNNGP(y.mod~x.mod, coords=coords.mod, starting=starting, method="response", n.neighbors=10,
               tuning=tuning, priors=priors, cov.model=cov.model,

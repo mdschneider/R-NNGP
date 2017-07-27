@@ -1,0 +1,586 @@
+
+R Under development (unstable) (2017-07-14 r72918) -- "Unsuffered Consequences"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "spNNGP"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> base::assign(".ExTimings", "spNNGP-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
+> library('spNNGP')
+Loading required package: coda
+Loading required package: Formula
+Loading required package: RANN
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("spConjNNGP")
+> ### * spConjNNGP
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: spConjNNGP
+> ### Title: Function for fitting univariate Bayesian conjugate spatial
+> ###   regression models
+> ### Aliases: spConjNNGP
+> ### Keywords: model
+> 
+> ### ** Examples
+> 
+> 
+> rmvn <- function(n, mu=0, V = matrix(1)){
++   p <- length(mu)
++   if(any(is.na(match(dim(V),p))))
++     stop("Dimension problem!")
++   D <- chol(V)
++   t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
++ }
+> 
+> ##Make some data
+> set.seed(1)
+> n <- 2000
+> coords <- cbind(runif(n,0,1), runif(n,0,1))
+> 
+> x <- cbind(1, rnorm(n))
+> 
+> B <- as.matrix(c(1,5))
+> 
+> sigma.sq <- 5
+> tau.sq <- 1
+> phi <- 3/0.5
+> 
+> D <- as.matrix(dist(coords))
+> R <- exp(-phi*D)
+> w <- rmvn(1, rep(0,n), sigma.sq*R)
+> y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
+> 
+> ho <- sample(1:n, 1000)
+> 
+> y.ho <- y[ho]
+> x.ho <- x[ho,,drop=FALSE]
+> w.ho <- w[ho]
+> coords.ho <- coords[ho,]
+> 
+> y <- y[-ho]
+> x <- x[-ho,,drop=FALSE]
+> w <- w[-ho,,drop=FALSE]
+> coords <- coords[-ho,]
+> 
+> ##Fit a Conjugate NNGP model and predict for the holdout
+> sigma.sq.IG <- c(2, sigma.sq)
+> 
+> cov.model <- "exponential"
+> 
+> g <- 10
+> theta.alpha <- cbind(seq(phi,30,length.out=g), seq(tau.sq/sigma.sq,5,length.out=g))
+> 
+> colnames(theta.alpha) <- c("phi", "alpha")
+> 
+> ##one thread
+> m.c <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
++                   X.0 = x.ho, coords.0 = coords.ho,
++                   k.fold = 5, score.rule = "crps",
++                   n.omp.threads = 1,
++                   theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model)
+----------------------------------------
+	Starting k-fold
+----------------------------------------
+  |                                      |                              |   0%  |                                      |******                        |  20%  |                                      |************                  |  40%  |                                      |******************            |  60%  |                                      |************************      |  80%  |                                      |******************************| 100%
+----------------------------------------
+	Model description
+----------------------------------------
+NNGP Conjugate model fit with 1000 observations.
+
+Number of covariates 2 (including intercept if specified).
+
+Using the exponential spatial correlation model.
+
+Using 10 nearest neighbors.
+
+------------
+Priors and hyperpriors:
+	beta flat.
+	sigma.sq IG hyperpriors shape=2.00000 and scale=5.00000
+------------
+Predicting at 1000 locations.
+------------
+
+Source compiled with OpenMP support and model fit using 1 thread(s).
+----------------------------------------
+	Building neighbor index
+----------------------------------------
+	Estimation for parameter set(s)
+----------------------------------------
+Set phi=6.00000 and alpha=0.20000
+> 
+> m.c$beta.hat
+            x1      x2
+[1,] 0.5289553 4.85163
+> m.c$sigma.sq.hat
+[1] 5.259097
+> m.c$k.fold.scores
+            phi     alpha    rmspe      crps
+ [1,]  6.000000 0.2000000 1.394772 0.7884892
+ [2,]  8.666667 0.7333333 1.408231 0.7966594
+ [3,] 11.333333 1.2666667 1.449657 0.8213142
+ [4,] 14.000000 1.8000000 1.513278 0.8583413
+ [5,] 16.666667 2.3333333 1.594423 0.9049183
+ [6,] 19.333333 2.8666667 1.685953 0.9570832
+ [7,] 22.000000 3.4000000 1.780923 1.0110811
+ [8,] 24.666667 3.9333333 1.874007 1.0640439
+ [9,] 27.333333 4.4666667 1.961770 1.1141004
+[10,] 30.000000 5.0000000 2.042355 1.1602146
+> 
+> ##two threads
+> m.c <- spConjNNGP(y~x-1, coords=coords, n.neighbors = 10,
++                   X.0 = x.ho, coords.0 = coords.ho,
++                   k.fold = 5, score.rule = "crps",
++                   n.omp.threads = 2,
++                   theta.alpha = theta.alpha, sigma.sq.IG = sigma.sq.IG, cov.model = cov.model)
+----------------------------------------
+	Starting k-fold
+----------------------------------------
+  |                                      |                              |   0%  |                                      |******                        |  20%  |                                      |************                  |  40%  |                                      |******************            |  60%  |                                      |************************      |  80%  |                                      |******************************| 100%
+----------------------------------------
+	Model description
+----------------------------------------
+NNGP Conjugate model fit with 1000 observations.
+
+Number of covariates 2 (including intercept if specified).
+
+Using the exponential spatial correlation model.
+
+Using 10 nearest neighbors.
+
+------------
+Priors and hyperpriors:
+	beta flat.
+	sigma.sq IG hyperpriors shape=2.00000 and scale=5.00000
+------------
+Predicting at 1000 locations.
+------------
+
+Source compiled with OpenMP support and model fit using 2 thread(s).
+----------------------------------------
+	Building neighbor index
+----------------------------------------
+	Estimation for parameter set(s)
+----------------------------------------
+Set phi=6.00000 and alpha=0.20000
+> 
+> m.c$beta.hat
+            x1      x2
+[1,] 0.5289553 4.85163
+> m.c$sigma.sq.hat
+[1] 5.259097
+> m.c$k.fold.scores
+            phi     alpha    rmspe      crps
+ [1,]  6.000000 0.2000000 1.415370 0.8010923
+ [2,]  8.666667 0.7333333 1.421914 0.8051398
+ [3,] 11.333333 1.2666667 1.460746 0.8278597
+ [4,] 14.000000 1.8000000 1.521866 0.8632271
+ [5,] 16.666667 2.3333333 1.600262 0.9083535
+ [6,] 19.333333 2.8666667 1.688924 0.9592742
+ [7,] 22.000000 3.4000000 1.781082 1.0121943
+ [8,] 24.666667 3.9333333 1.871534 1.0642005
+ [9,] 27.333333 4.4666667 1.956907 1.1133899
+[10,] 30.000000 5.0000000 2.035360 1.1587092
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spConjNNGP", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("spNNGP")
+> ### * spNNGP
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: spNNGP
+> ### Title: Function for fitting univariate Bayesian spatial regression
+> ###   models
+> ### Aliases: spNNGP
+> ### Keywords: model
+> 
+> ### ** Examples
+> 
+> 
+> rmvn <- function(n, mu=0, V = matrix(1)){
++   p <- length(mu)
++   if(any(is.na(match(dim(V),p))))
++     stop("Dimension problem!")
++   D <- chol(V)
++   t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
++ }
+> 
+> ##Make some data
+> set.seed(1)
+> n <- 100
+> coords <- cbind(runif(n,0,1), runif(n,0,1))
+> 
+> x <- cbind(1, rnorm(n))
+> 
+> B <- as.matrix(c(1,5))
+> 
+> sigma.sq <- 5
+> tau.sq <- 1
+> phi <- 3/0.5
+> 
+> D <- as.matrix(dist(coords))
+> R <- exp(-phi*D)
+> w <- rmvn(1, rep(0,n), sigma.sq*R)
+> y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
+> 
+> ##Fit a Response and Sequential NNGP model
+> n.samples <- 500
+> 
+> starting <- list("phi"=phi, "sigma.sq"=5, "tau.sq"=1)
+> 
+> tuning <- list("phi"=0.5, "sigma.sq"=0.5, "tau.sq"=0.5)
+> 
+> priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 5), "tau.sq.IG"=c(2, 1))
+> 
+> cov.model <- "exponential"
+> 
+> m.s <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.neighbors=10,
++               tuning=tuning, priors=priors, cov.model=cov.model,
++               n.samples=n.samples, n.omp.threads=2)
+----------------------------------------
+	Model description
+----------------------------------------
+NNGP Sequential model fit with 100 observations.
+
+Number of covariates 2 (including intercept if specified).
+
+Using the exponential spatial correlation model.
+
+Using 10 nearest neighbors.
+
+Number of MCMC samples 500.
+
+Priors and hyperpriors:
+	beta flat.
+	sigma.sq IG hyperpriors shape=2.00000 and scale=5.00000
+	tau.sq IG hyperpriors shape=2.00000 and scale=1.00000
+	phi Unif hyperpriors a=3.00000 and b=300.00000
+
+Source compiled with OpenMP support and model fit using 2 thread(s).
+----------------------------------------
+	Building neighbor index
+Building neighbors of neighbor index
+----------------------------------------
+		Sampling
+----------------------------------------
+Sampled: 100 of 500, 20.00%
+Report interval Metrop. Acceptance rate: 52.00%
+Overall Metrop. Acceptance rate: 52.00%
+-------------------------------------------------
+Sampled: 200 of 500, 40.00%
+Report interval Metrop. Acceptance rate: 53.00%
+Overall Metrop. Acceptance rate: 52.50%
+-------------------------------------------------
+Sampled: 300 of 500, 60.00%
+Report interval Metrop. Acceptance rate: 52.00%
+Overall Metrop. Acceptance rate: 52.33%
+-------------------------------------------------
+Sampled: 400 of 500, 80.00%
+Report interval Metrop. Acceptance rate: 44.00%
+Overall Metrop. Acceptance rate: 50.25%
+-------------------------------------------------
+> 
+> round(summary(m.s$p.beta.samples)$quantiles[,c(3,1,5)],2)
+    50% 2.5% 97.5%
+x1 2.09 1.38  2.73
+x2 4.87 4.50  5.23
+> round(summary(m.s$p.theta.samples)$quantiles[,c(3,1,5)],2)
+           50% 2.5% 97.5%
+sigma.sq  4.01 2.16  6.16
+tau.sq    0.83 0.27  2.34
+phi      11.90 4.50 25.88
+> plot(apply(m.s$p.w.samples, 1, median), w)
+> 
+> m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neighbors=10,
++               tuning=tuning, priors=priors, cov.model=cov.model,
++               n.samples=n.samples, n.omp.threads=2)
+----------------------------------------
+	Model description
+----------------------------------------
+NNGP Response model fit with 100 observations.
+
+Number of covariates 2 (including intercept if specified).
+
+Using the exponential spatial correlation model.
+
+Using 10 nearest neighbors.
+
+Number of MCMC samples 500.
+
+Priors and hyperpriors:
+	beta flat.
+	sigma.sq IG hyperpriors shape=2.00000 and scale=5.00000
+	tau.sq IG hyperpriors shape=2.00000 and scale=1.00000
+	phi Unif hyperpriors a=3.00000 and b=300.00000
+
+Source compiled with OpenMP support and model fit using 2 thread(s).
+----------------------------------------
+	Building neighbor index
+----------------------------------------
+		Sampling
+----------------------------------------
+Sampled: 100 of 500, 20.00%
+Report interval Metrop. Acceptance rate: 33.00%
+Overall Metrop. Acceptance rate: 33.00%
+-------------------------------------------------
+Sampled: 200 of 500, 40.00%
+Report interval Metrop. Acceptance rate: 28.00%
+Overall Metrop. Acceptance rate: 30.50%
+-------------------------------------------------
+Sampled: 300 of 500, 60.00%
+Report interval Metrop. Acceptance rate: 29.00%
+Overall Metrop. Acceptance rate: 30.00%
+-------------------------------------------------
+Sampled: 400 of 500, 80.00%
+Report interval Metrop. Acceptance rate: 19.00%
+Overall Metrop. Acceptance rate: 27.25%
+-------------------------------------------------
+> 
+> round(summary(m.r$p.beta.samples)$quantiles[,c(3,1,5)],2)
+    50% 2.5% 97.5%
+x1 2.11 1.14  2.89
+x2 4.82 4.49  5.19
+> round(summary(m.r$p.theta.samples)$quantiles[,c(3,1,5)],2)
+           50% 2.5% 97.5%
+sigma.sq  3.48 2.18  6.44
+tau.sq    1.08 0.30  2.14
+phi      12.73 5.23 20.14
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spNNGP", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("spPredict")
+> ### * spPredict
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: spPredict
+> ### Title: Function for prediction at new locations using 'spNNGP' models.
+> ### Aliases: spPredict
+> ### Keywords: model
+> 
+> ### ** Examples
+> 
+> 
+> rmvn <- function(n, mu=0, V = matrix(1)){
++   p <- length(mu)
++   if(any(is.na(match(dim(V),p))))
++     stop("Dimension problem!")
++   D <- chol(V)
++   t(matrix(rnorm(n*p), ncol=p)%*%D + rep(mu,rep(n,p)))
++ }
+> 
+> ##Make some data
+> set.seed(1)
+> n <- 100
+> coords <- cbind(runif(n,0,1), runif(n,0,1))
+> 
+> x <- cbind(1, rnorm(n))
+> 
+> B <- as.matrix(c(1,5))
+> 
+> sigma.sq <- 5
+> tau.sq <- 1
+> phi <- 3/0.5
+> 
+> D <- as.matrix(dist(coords))
+> R <- exp(-phi*D)
+> w <- rmvn(1, rep(0,n), sigma.sq*R)
+> y <- rnorm(n, x%*%B + w, sqrt(tau.sq))
+> 
+> ho <- sample(1:n, 50)
+> 
+> y.ho <- y[ho]
+> x.ho <- x[ho,,drop=FALSE]
+> w.ho <- w[ho]
+> coords.ho <- coords[ho,]
+> 
+> y <- y[-ho]
+> x <- x[-ho,,drop=FALSE]
+> w <- w[-ho,,drop=FALSE]
+> coords <- coords[-ho,]
+> 
+> ##Fit a Response and Sequential NNGP model
+> n.samples <- 500
+> 
+> starting <- list("phi"=phi, "sigma.sq"=5, "tau.sq"=1)
+> 
+> tuning <- list("phi"=0.5, "sigma.sq"=0.5, "tau.sq"=0.5)
+> 
+> priors <- list("phi.Unif"=c(3/1, 3/0.01), "sigma.sq.IG"=c(2, 5), "tau.sq.IG"=c(2, 1))
+> 
+> cov.model <- "exponential"
+> 
+> n.report <- 500
+> 
+> ##Predict for holdout set using both models
+> m.s <- spNNGP(y~x-1, coords=coords, starting=starting, method="sequential", n.neighbors=10,
++               tuning=tuning, priors=priors, cov.model=cov.model,
++               n.samples=n.samples, n.omp.threads=2, n.report=n.report)
+----------------------------------------
+	Model description
+----------------------------------------
+NNGP Sequential model fit with 50 observations.
+
+Number of covariates 2 (including intercept if specified).
+
+Using the exponential spatial correlation model.
+
+Using 10 nearest neighbors.
+
+Number of MCMC samples 500.
+
+Priors and hyperpriors:
+	beta flat.
+	sigma.sq IG hyperpriors shape=2.00000 and scale=5.00000
+	tau.sq IG hyperpriors shape=2.00000 and scale=1.00000
+	phi Unif hyperpriors a=3.00000 and b=300.00000
+
+Source compiled with OpenMP support and model fit using 2 thread(s).
+----------------------------------------
+	Building neighbor index
+Building neighbors of neighbor index
+----------------------------------------
+		Sampling
+----------------------------------------
+> 
+> m.r <- spNNGP(y~x-1, coords=coords, starting=starting, method="response", n.neighbors=10,
++               tuning=tuning, priors=priors, cov.model=cov.model,
++               n.samples=n.samples, n.omp.threads=2, n.report=n.report)
+----------------------------------------
+	Model description
+----------------------------------------
+NNGP Response model fit with 50 observations.
+
+Number of covariates 2 (including intercept if specified).
+
+Using the exponential spatial correlation model.
+
+Using 10 nearest neighbors.
+
+Number of MCMC samples 500.
+
+Priors and hyperpriors:
+	beta flat.
+	sigma.sq IG hyperpriors shape=2.00000 and scale=5.00000
+	tau.sq IG hyperpriors shape=2.00000 and scale=1.00000
+	phi Unif hyperpriors a=3.00000 and b=300.00000
+
+Source compiled with OpenMP support and model fit using 2 thread(s).
+----------------------------------------
+	Building neighbor index
+----------------------------------------
+		Sampling
+----------------------------------------
+> 
+> ##Prediction for holdout data
+> p.s <- spPredict(m.s, X.0 = x.ho, coords.0 = coords.ho, n.omp.threads=2)
+----------------------------------------
+	Prediction description
+----------------------------------------
+NNGP Sequential model fit with 50 observations.
+
+Number of covariates 2 (including intercept if specified).
+
+Using the exponential spatial correlation model.
+
+Using 10 nearest neighbors.
+
+Number of MCMC samples 500.
+
+Predicting at 50 locations.
+
+
+Source compiled with OpenMP support and model fit using 2 threads.
+-------------------------------------------------
+		Predicting
+-------------------------------------------------
+Location: 50 of 50, 100.00%
+> 
+> plot(apply(p.s$p.w.0, 1, mean), w.ho)
+> plot(apply(p.s$p.y.0, 1, mean), y.ho)
+> 
+> p.r <- spPredict(m.r, X.0 = x.ho, coords.0 = coords.ho, n.omp.threads=2)
+----------------------------------------
+	Prediction description
+----------------------------------------
+NNGP Response model fit with 50 observations.
+
+Number of covariates 2 (including intercept if specified).
+
+Using the exponential spatial correlation model.
+
+Using 10 nearest neighbors.
+
+Number of MCMC samples 500.
+
+Predicting at 50 locations.
+
+
+Source compiled with OpenMP support and model fit using 2 threads.
+-------------------------------------------------
+		Predicting
+-------------------------------------------------
+Location: 50 of 50, 100.00%
+> 
+> points(apply(p.r$p.y.0, 1, mean), y.ho, pch=19, col="blue")
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("spPredict", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> ### * <FOOTER>
+> ###
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  5.06 0.032 4.001 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

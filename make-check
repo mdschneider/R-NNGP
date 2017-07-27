@@ -1,1 +1,1 @@
-R CMD build --resave-data spNNGP && R CMD check --as-cran spNNGP_0.1.1.tar.gz
+R CMD build --resave-data spNNGP && R CMD check --as-cran spNNGP_0.1.2.tar.gz
